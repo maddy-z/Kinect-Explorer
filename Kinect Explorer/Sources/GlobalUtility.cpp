@@ -598,6 +598,7 @@ bool ConvertDepthCvMat16uToGrayCvMat(const cv::Mat & srcDepthMat, cv::Mat & dest
 	const int nXRes = srcDepthMat.cols;
 	const int nYRes = srcDepthMat.rows;
 	const int srcRowStep = srcDepthMat.step;
+	const int destChannel = destMat.channels();
 
 	const uchar * srcRowPtr = NULL;
 	const unsigned short * srcDataPtr = NULL;
@@ -609,18 +610,12 @@ bool ConvertDepthCvMat16uToGrayCvMat(const cv::Mat & srcDepthMat, cv::Mat & dest
 		srcDataPtr = (const unsigned short *)(srcRowPtr);
 		uchar * imagePtr = destMat.ptr(y);
 
-		for ( int x = 0; x < nXRes; ++x, ++srcDataPtr, imagePtr += destMat.channels() ) 
+		for ( int x = 0; x < nXRes; ++x, ++srcDataPtr, imagePtr += destChannel ) 
 		{
-			if (*srcDataPtr) {
-				uchar value = 255.f * (1.f - (double)(*srcDataPtr) / maxDepth); 
-		
-				imagePtr[2] = imagePtr[1] = imagePtr[0] = value;
-				// imagePtr[3] = 0xff;
-			}
-			else {
-				imagePtr[2] = imagePtr[1] = imagePtr[0] = 0;
-				// imagePtr[3] = 0xff;
-			}
+			uchar value = 0;
+			if ( *srcDataPtr ) { value = 255.f * (1.f - (double)(*srcDataPtr) / maxDepth); }
+
+			for ( int k = 0; k < destChannel; ++k ) { imagePtr[k] = value; }
 		}
 	}
 	

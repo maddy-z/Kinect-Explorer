@@ -89,6 +89,9 @@
     <ClInclude Include="AvgHeadCoor.h" />
     <ClInclude Include="ProjScene.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\OpenNiProductConfig.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -1,5 +1,7 @@
 #include	"OpenCvUtility.h"
 
+#include	<cmath>
+
 #include	<opencv2\opencv.hpp>
 
 #define		OPENNI_MAX_DEPTH		10000
@@ -8,7 +10,7 @@ namespace	OpenCvUtility				// Start Of Namespace ( OpenCvUtility )
 
 {	
 
-double CalcAverageDepth ( const cv::Mat & srcDepthMat )
+double CalcAverageDepth   ( const cv::Mat & srcDepthMat )
 {
 	if ( srcDepthMat.empty() ) {
 		return ( -1 );
@@ -38,7 +40,7 @@ double CalcAverageDepth ( const cv::Mat & srcDepthMat )
 
 	return (totalDepthValue) / (double)(totalDepthPixelCount);
 }
-double CalcSmallestDepth(const cv::Mat & srcDepthMat)
+double CalcSmallestDepth  ( const cv::Mat & srcDepthMat )
 {
 	if ( srcDepthMat.empty() ) {
 		return (-1);
@@ -65,7 +67,7 @@ double CalcSmallestDepth(const cv::Mat & srcDepthMat)
 
 	return value;
 }
-double CalcBiggestDepth(const cv::Mat & srcDepthMat)
+double CalcBiggestDepth   ( const cv::Mat & srcDepthMat )
 {
 	if ( srcDepthMat.empty() ) {
 		return (-1);
@@ -92,8 +94,7 @@ double CalcBiggestDepth(const cv::Mat & srcDepthMat)
 
 	return value;
 }
-
-double CalcBiggestDepth8u(const cv::Mat & srcDepthMat)
+double CalcBiggestDepth8u ( const cv::Mat & srcDepthMat )
 {
 	if (srcDepthMat.empty()) {
 		return (-1);
@@ -230,6 +231,42 @@ void CalcMinimumOfDepthHistogram ( const cv::Mat & srcDepthMat, int & minIndex, 
 	minIndex = tmpIndex;
 
 	return;
+}
+
+bool DownSamplingCvMat16u ( const cv::Mat & srcMat, int factor, cv::Mat & destMat )
+{
+	if ( srcMat.empty() || destMat.empty() ) {
+		return false;
+	}
+	if ( factor <= 0 ) {
+		return false;
+	}
+
+	assert ( srcMat.rows - factor * destMat.rows >= 0 && srcMat.rows - factor * destMat.rows < factor );
+	assert ( srcMat.cols - factor * destMat.cols >= 0 && srcMat.cols - factor * destMat.cols < factor );
+
+	const int destHeight = destMat.rows, destWidth = destMat.cols;
+	const int srcRowStep = srcMat.step;
+	const int destRowStep = destMat.step;
+
+	const unsigned char * srcRowPtr = NULL;
+	const unsigned short * srcDataPtr = NULL;
+	unsigned char * destRowPtr = NULL;
+	unsigned short * destDataPtr = NULL;
+
+	srcRowPtr = srcMat.data;
+	destRowPtr = destMat.data;
+
+	for ( int y = 0; y < destHeight; ++y, srcRowPtr += 2 * srcRowStep, destRowPtr += destRowStep ) {
+		srcDataPtr = (const unsigned short *)(srcRowPtr);
+		destDataPtr = (unsigned short *)(destRowPtr);
+
+		for ( int x = 0; x < destWidth; ++x, srcDataPtr += 2, ++destDataPtr ) {
+			*destDataPtr = *srcDataPtr;
+		}
+	}
+
+	return true;
 }
 
 }						

@@ -31,9 +31,9 @@
 #include "AvgHeadCoor.h"
 #include "ProjScene.h"
 
-// 
-// MACRO DEFINITIONS
-// 
+// -------------------
+//  MACRO DEFINITIONS
+// -------------------
 
 // 
 // Head Tracking Related MACRO DEFINITIONS
@@ -48,10 +48,12 @@
 #define		INVALID_KEY_VALUE		-1
 #define		ESC_KEY_VALUE			27
 
-// #define		HANDLING_IMAGE_DATA
 #define		HANDLING_DEPTH_DATA
+#define		HANDLING_IMAGE_DATA
+#undef		HANDLING_IMAGE_DATA
 
-// #define		USE_ANT_TWEAK_BAR
+#define		USE_ANT_TWEAK_BAR
+#undef		USE_ANT_TWEAK_BAR
 
 // 
 // FORWARD DECLARATION
@@ -68,47 +70,49 @@ void IdleProcessOfHeadTracking ( void );
 // 
 
 xn::Context				g_Context;
-xn::ScriptNode			g_ScriptNode;
 
 xn::DepthGenerator		g_DepthGen;
 xn::ImageGenerator		g_ImageGen;
 xn::DepthMetaData		g_DepthMD;
 xn::ImageMetaData		g_ImageMD;
 
+double					g_fXToZ;
+double					g_fYToZ;
+
 // Projector Information
-const int g_ProjectorWidth  = 1024;
-const int g_ProjectorHeight = 768;
+const int				g_ProjectorWidth  = 1024;
+const int				g_ProjectorHeight = 768;
 
 // 
 // Head Tracking Related Variables
 // 
 
-cv::Mat		g_DepthImgShow;
-cv::Mat		g_ColorImgMat;
-cv::Mat		g_DepthImgMat;
+cv::Mat					g_DepthImgShow;
+cv::Mat					g_DepthImgMat;
+cv::Mat					g_ColorImgMat;
 
-//QImage		g_DepthImgBuff;
+// QImage				g_DepthImgBuff;
 
 // cv::Mat depthImgShow ( g_DepthMD.YRes(), g_DepthMD.XRes(), CV_8UC3 );
 // cv::Mat colorImgMat  ( g_ImageMD.YRes(), g_ImageMD.XRes(), CV_8UC3 );
 // cv::Mat depthImgMat  ( g_DepthMD.YRes(), g_DepthMD.XRes(), CV_16UC1 );
 
-// QImage depthImgBuff ( g_DepthMD.XRes(), g_DepthMD.YRes(), QImage::Format_RGB32 );
+// QImage depthImgBuff	( g_DepthMD.XRes(), g_DepthMD.YRes(), QImage::Format_RGB32 );
 
-bool g_FlipColor	= true;											// Flag for Fliping Color
+bool					g_FlipColor	= true;										// Flag for Fliping Color
 
-int g_CtlWndKey;
-int g_HeadRowIndex;
-int g_HeadColIndex;
+int						g_CtlWndKey;
+int						g_HeadRowIndex;
+int						g_HeadColIndex;
 
-cv::Mat g_ExtrMat ( 4, 4, CV_32FC1 );								// Camera Extrinsic Matrix
+cv::Mat					g_ExtrMat ( 4, 4, CV_32FC1 );							// Camera Extrinsic Matrix
 
-AvgHeadCoor g_AvgHeadCoor ( 3, 100 );
+AvgHeadCoor				g_AvgHeadCoor ( 7, 100 );
 
-DWORD g_StartTickCount;
-DWORD g_CurrTickCount;
+DWORD					g_StartTickCount;
+DWORD					g_CurrTickCount;
 
-long g_HeadTrackingFrameCount;
+long					g_HeadTrackingFrameCount;
 
 // 
 // FORWARD DECLARATION
@@ -122,34 +126,32 @@ void CalcWorldCoorOfHead (	XnPoint3D & headWorldCoor,
 
 void PrintMatrix		 (	const cv::Mat & matrix );
 
-// 
-// Main Function
-// 
+// ---------------
+//  Main Function
+// ---------------
 
 int main ( int argc, char ** argv )
 {
-	// 
 	// Get Screen Parameters
-	// 
+	const int screenX = GetSystemMetrics ( SM_CXSCREEN );
+	const int screenY = GetSystemMetrics ( SM_CYSCREEN );
 
-	int screenX = GetSystemMetrics ( SM_CXSCREEN );
-	int screenY = GetSystemMetrics ( SM_CYSCREEN );
-
-	std::cout << "screenX = " << screenX << std::endl;
-	std::cout << "screenY = " << screenY << std::endl;
+	// std::cout << "screenX = " << screenX << std::endl;
+	// std::cout << "screenY = " << screenY << std::endl;
 
 	// 
 	// Initializing OpenNI Settings
 	// 
 	
 	XnStatus nRetVal = XN_STATUS_OK;
+	xn::ScriptNode scriptNode;
 	xn::EnumerationErrors errors;
-
+	
 	// 
 	// Initializing OpenNI Context Object
 	// 
 	
-	nRetVal = g_Context.InitFromXmlFile ( CONFIG_XML_PATH, g_ScriptNode, &errors );
+	nRetVal = g_Context.InitFromXmlFile ( CONFIG_XML_PATH, scriptNode, &errors );
 	if ( nRetVal == XN_STATUS_NO_NODE_PRESENT ) 
 	{
 		XnChar strError[1024];
@@ -170,42 +172,53 @@ int main ( int argc, char ** argv )
 	// 
 	// Handle Image & Depth Generator Node
 	// 
-	
+
+	bool depthFlag = true;
+	bool colorFlag = true;
+
 	nRetVal = g_Context.FindExistingNode ( XN_NODE_TYPE_DEPTH, g_DepthGen );
-	if ( nRetVal != XN_STATUS_OK )
-	{
-		printf ( "No Depth Node Exists! Please Check your XML.\n" );
-		return ( nRetVal );
+	if ( nRetVal != XN_STATUS_OK ) {
+		depthFlag = false;
+		printf ( "No Depth Node Exists!\n" );
 	}	
 	nRetVal = g_Context.FindExistingNode ( XN_NODE_TYPE_IMAGE, g_ImageGen );
-	if ( nRetVal != XN_STATUS_OK )
-	{
-		printf ( "No Image Node Exists! Please Check your XML.\n" );
-		return ( nRetVal );
+	if ( nRetVal != XN_STATUS_OK ) {
+		colorFlag = false;
+		printf ( "No Image Node Exists!\n" );
 	}
 
-	// g_DepthGen.GetAlternativeViewPointCap().SetViewPoint( g_ImageGen );
+	// g_DepthGen.GetAlternativeViewPointCap().SetViewPoint ( g_ImageGen );
+	
+	if ( depthFlag ) {
+		g_DepthGen.GetMetaData ( g_DepthMD );
+		assert ( g_DepthMD.PixelFormat() == XN_PIXEL_FORMAT_GRAYSCALE_16_BIT );
+	}
+	if ( colorFlag ) {
+		g_ImageGen.GetMetaData ( g_ImageMD );
+		assert ( g_ImageMD.PixelFormat() == XN_PIXEL_FORMAT_RGB24 );
+	}
 
-	g_DepthGen.GetMetaData ( g_DepthMD );
-	g_ImageGen.GetMetaData ( g_ImageMD );
-
-	assert ( g_ImageMD.PixelFormat() == XN_PIXEL_FORMAT_RGB24 );
-	assert ( g_DepthMD.PixelFormat() == XN_PIXEL_FORMAT_GRAYSCALE_16_BIT );
+	XnFieldOfView fov;
+	g_DepthGen.GetFieldOfView ( fov );
+	
+	g_fXToZ = tan ( fov.fHFOV / 2.0f ) * 2.0f;
+	g_fYToZ = tan ( fov.fVFOV / 2.0f ) * 2.0f;
 
 	// 
 	// Create OpenCV Showing Window
 	// 
 
 	ReadExtrParaFile ( EXTR_MATRIX_PATH, g_ExtrMat );
-	PrintMatrix ( g_ExtrMat );
+	PrintMatrix	( g_ExtrMat );
 	
-	g_DepthImgShow = cv::Mat ( g_DepthMD.YRes(), g_DepthMD.XRes(), CV_8UC1 );
-	g_DepthImgMat  = cv::Mat ( g_DepthMD.YRes(), g_DepthMD.XRes(), CV_16UC1 );
-	g_ColorImgMat  = cv::Mat ( g_ImageMD.YRes(), g_ImageMD.XRes(), CV_8UC3  );
+	g_DepthImgShow = cv::Mat ( ( g_DepthMD.YRes() + 1 ) / 2, ( g_DepthMD.XRes() + 1 ) / 2, CV_8UC1  );
+	g_DepthImgMat  = cv::Mat ( ( g_DepthMD.YRes() + 1 ) / 2, ( g_DepthMD.XRes() + 1 ) / 2, CV_16UC1 );
+	g_ColorImgMat  = cv::Mat ( ( g_ImageMD.YRes() ), g_ImageMD.XRes(), CV_8UC3 );
+
 	// g_DepthImgBuff = QImage  ( g_DepthMD.XRes(), g_DepthMD.YRes(), QImage::Format_RGB32 );
 
-	// ---------------------------------------------------------------
-	// ---------------------------------------------------------------
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------
 
 	// 
 	// Initializing Glut & 3D Scene
@@ -215,14 +228,13 @@ int main ( int argc, char ** argv )
 	// GLUT Initialization
 	// 
 	
-	glutInit ( &argc, argv );
-	glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
-	glutInitWindowPosition ( screenX, 0/*glutMainWndPosY*/ );
-	glutInitWindowSize ( g_ProjectorWidth, g_ProjectorHeight );
+	glutInit				( &argc, argv );
+	glutInitDisplayMode		( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+	glutInitWindowPosition	( screenX, 0 );
+	glutInitWindowSize		( g_ProjectorWidth, g_ProjectorHeight );
 
-	// glutMainWndHandler = glutCreateWindow ( "Simple 3D Scene" );
-	glutCreateWindow ( "Simple 3D Scene" );
-	glutCreateMenu ( NULL );
+	glutCreateWindow		( "Simple 3D Scene" );
+	glutCreateMenu			( NULL );
 
 	// GL & GLU Initialization
 	GlInit ();
@@ -235,7 +247,6 @@ int main ( int argc, char ** argv )
 
 #endif
 
-	// Set GLUT event callbacks
 	glutMouseFunc			( MouseFunc );														// - Directly redirect GLUT mouse button events to AntTweakBar
 	glutMotionFunc			( MouseMotion );													// - Directly redirect GLUT mouse motion events to AntTweakBar
 	glutKeyboardFunc		( Keyboard );														// - Directly redirect GLUT key events to AntTweakBar
@@ -274,99 +285,20 @@ int main ( int argc, char ** argv )
 #endif 
 
 	// Recording Start Tick Count
-
-	g_StartTickCount = GetTickCount();
+	g_StartTickCount = GetTickCount ();
 	g_HeadTrackingFrameCount = 0;
 
-	// 
 	// Start to Loop
-	// 
-
 	glutMainLoop ();
-
-	/*
-	while ( ctlWndKey != ESC_KEY_VALUE ) 
-	{
-		// 
-		// Try to Get New Frame From Kinect
-		// 
-	
-		nRetVal = g_Context.WaitAnyUpdateAll ();
-
-		g_DepthGen.GetMetaData ( g_DepthMD );
-		g_ImageGen.GetMetaData ( g_ImageMD );
-
-		// assert ( g_DepthMD.FullXRes() == g_DepthMD.XRes() && g_DepthMD.FullYRes() == g_DepthMD.YRes() );
-		// assert ( g_ImageMD.FullXRes() == g_ImageMD.XRes() && g_ImageMD.FullYRes() == g_ImageMD.YRes() );
-
-		// To Handle Image Data
-		GlobalUtility::CopyColorRawBufToCvMat8uc3 ( (const XnRGB24Pixel *)(g_ImageMD.Data()), colorImgMat );
-		
-		if ( ctlWndKey == 's' || ctlWndKey == 'S' ) {						// Switch
-			flipColor = !flipColor;
-		}
-
-		if ( flipColor ) { 
-			cv::cvtColor ( colorImgMat, colorImgMat, CV_RGB2BGR );
-		}
-
-		cv::imshow ( IMAGE_WIN_NAME, colorImgMat );
-
-#ifdef HANDLING_DEPTH_DATA
-
-		XnPoint3D headImgCoor, headKinectCoor, headWorldCoor;
-		headImgCoor.X = headImgCoor.Y = headImgCoor.Z = 0.0f;
-
-		// Handle Depth Data
-		if ( SimpleHeadTracking::SimpleDepthHandlingFunc2 ( depthImgBuff, g_DepthGen, headImgCoor ) == true ) {
-			GlobalUtility::CopyQImageToCvMat8uc3 ( depthImgBuff, depthImgShow );
-
-			g_DepthGen.ConvertProjectiveToRealWorld ( 1, &headImgCoor, &headKinectCoor );
-
-			cv::namedWindow ( DEPTH_WIN_NAME, CV_WINDOW_AUTOSIZE );
-			cv::imshow ( DEPTH_WIN_NAME, depthImgShow );
-		}
-
-		// 
-		// Calculate Head Coordinate of the Whole Scene
-		// 
-		
-		CalcWorldCoorOfHead ( headWorldCoor, headKinectCoor, extrMat );
-
-		char headImgCoorStr[100];
-		char headKinectCoorStr[100];
-		char headWorldCoorStr[100];
-
-		sprintf ( headImgCoorStr, "< %.6f, %.6f, %.6f >", headImgCoor.X, headImgCoor.Y, headImgCoor.Z );
-		sprintf ( headKinectCoorStr, "< %.6f, %.6f, %.6f >", headKinectCoor.X, headKinectCoor.Y, headKinectCoor.Z );
-		sprintf ( headWorldCoorStr, "< %.6f, %.6f, %.6f >", headWorldCoor.X, headWorldCoor.Y, headWorldCoor.Z );
-
-		PrintMatrix ( extrMat );
-		std::cout << "HeadImgCoor = " << std::string(headImgCoorStr) << std::endl;
-		std::cout << "HeadKinectCoor = " << std::string(headKinectCoorStr) << std::endl;
-		std::cout << "HeadWorldCoor = " << std::string(headWorldCoorStr) << std::endl;
-
-		// GlobalUtility::CopyDepthRawBufToCvMat16u ( g_DepthMD.Data(), depthImgMat );
-		// GlobalUtility::ConvertDepthCvMat16uToYellowCvMat ( depthImgMat, depthImgShow );
-		// GlobalUtility::ConvertDepthCvMat16uToGrayCvMat ( depthImgMat, depthImgShow );
-
-#endif
-
-		ctlWndKey = cvWaitKey ( 15 );
-
-	}
-	*/
-
-	// Tw Terminate
 
 #ifdef USE_ANT_TWEAK_BAR
 
+	// Tw Terminate
 	TwTerminate ();	
 
 #endif
 
-	// Release OpenNI
-	g_Context.Release ();
+	g_Context.Release ();									// Release OpenNI
 
 	system ( "pause" );
 	exit ( EXIT_SUCCESS );
@@ -395,7 +327,6 @@ void IdleProcessOfHeadTracking ( void )
 	if ( g_CtlWndKey == 's' || g_CtlWndKey == 'S' ) {												// Switch
 		g_FlipColor = !g_FlipColor;
 	}
-
 	if ( g_FlipColor ) {
 		cv::cvtColor ( g_ColorImgMat, g_ColorImgMat, CV_RGB2BGR );
 	}
@@ -408,17 +339,42 @@ void IdleProcessOfHeadTracking ( void )
 #ifdef HANDLING_DEPTH_DATA
 
 	// Get Depth Data First
-	// g_DepthGen.GetMetaData ( g_DepthMD );
+	g_DepthGen.GetMetaData ( g_DepthMD );
 
 	XnPoint3D headImgCoor, headKinectCoor, headWorldCoor;
+	
 	headImgCoor.X = headImgCoor.Y = headImgCoor.Z = 0.0f;
 	headKinectCoor.X = headKinectCoor.Y = headKinectCoor.Z = 0.0f;
+	headWorldCoor.X = headWorldCoor.Y = headWorldCoor.Z = 0.0f;
 
+	// 
 	// Handle Depth Data
-	if ( SimpleHeadTracking::SimpleDepthHandlingFunc2 ( g_DepthImgMat, g_DepthGen, headImgCoor ) == true ) 
+	// 
+	
+	if ( SimpleHeadTracking::SimpleDepthHandlingFunc2 ( g_DepthImgMat, g_DepthGen, headImgCoor ) ) 
 	{
-		// Get Average Head Image Coor in Kinect's Depth Image to avoid vibration 
+		GlobalUtility::ConvertDepthCvMat16uToGrayCvMat ( g_DepthImgMat, g_DepthImgShow );
+		// GlobalUtility::ConvertDepthCvMat16uToGrayQImage ( g_DepthImgMat, g_DepthImgShow );
 		
+		for ( int i = 0; i < 25; ++i ) {
+			if ( headImgCoor.Y + i < g_DepthImgShow.size().height )	{ g_DepthImgShow.at<uchar>( headImgCoor.Y + i, headImgCoor.X) = 0; }
+			if ( headImgCoor.Y - i >= 0 )							{ g_DepthImgShow.at<uchar>( headImgCoor.Y - i, headImgCoor.X) = 0; }
+			if ( headImgCoor.X + i < g_DepthImgShow.size().width )	{ g_DepthImgShow.at<uchar>( headImgCoor.Y, headImgCoor.X + i) = 0; }
+			if ( headImgCoor.X - i >= 0 )							{ g_DepthImgShow.at<uchar>( headImgCoor.Y, headImgCoor.X - i) = 0; }
+		}
+
+		/*
+		GlobalUtility::ConvertDepthCvMat16uToGrayQImage ( g_DepthImgMat, g_DepthImgBuff );
+		for ( int i = 0; i < 25; ++i ) {
+			if ( headImgCoor.Y + i < g_DepthImgShow.size().height )	{ g_DepthImgBuff.setPixel ( headImgCoor.X, headImgCoor.Y + i, blackColor ); }
+			if ( headImgCoor.Y - i >= 0 )							{ g_DepthImgBuff.setPixel ( headImgCoor.X, headImgCoor.Y - i, blackColor ); }
+			if ( headImgCoor.X + i < g_DepthImgShow.size().width )	{ g_DepthImgBuff.setPixel ( headImgCoor.X + i, headImgCoor.Y, blackColor ); }
+			if ( headImgCoor.X - i >= 0 )							{ g_DepthImgBuff.setPixel ( headImgCoor.X - i, headImgCoor.Y, blackColor ); }
+		}
+		GlobalUtility::CopyQImageToCvMat8uc3 ( g_DepthImgBuff, g_DepthImgShow );
+		*/
+
+		// Get Average Head Image Coor in Kinect's Depth Image to avoid vibration 
 		cv::Point3f tmpPt ( headImgCoor.X, headImgCoor.Y, headImgCoor.Z );
 		g_AvgHeadCoor.InsertNewHeadCoor ( tmpPt );
 		g_AvgHeadCoor.GetAvgHeadCoor ( tmpPt );
@@ -427,55 +383,27 @@ void IdleProcessOfHeadTracking ( void )
 		headImgCoor.Y = tmpPt.y;
 		headImgCoor.Z = tmpPt.z;
 
-		static QRgb whiteColor = qRgb ( 255, 255, 255 );
-		static QRgb blackColor = qRgb ( 0, 0, 0 );
+		OpenNiUtility::ConvertProjectiveToRealWorld ( 1, (g_DepthMD.XRes() + 1 ) / 2, (g_DepthMD.YRes() + 1 ) / 2, g_fXToZ, g_fYToZ, &headImgCoor, &headKinectCoor );												
+		// g_DepthGen.ConvertProjectiveToRealWorld ( 1, &headImgCoor, &headKinectCoor );
 
-		GlobalUtility::ConvertDepthCvMat16uToGrayQImage ( g_DepthImgMat, g_DepthImgShow );
-
-		for ( int i = 0; i < 25; ++i ) 
-		{
-			if ( headImgCoor.Y + i < g_DepthImgShow.size().height )	{ g_DepthImgShow.at<uchar>( headImgCoor.Y + i, headImgCoor.X) = 0; }
-			if ( headImgCoor.Y - i >= 0 )							{ g_DepthImgShow.at<uchar>( headImgCoor.Y - i, headImgCoor.X) = 0; }
-			if ( headImgCoor.X + i < g_DepthImgShow.size().width )	{ g_DepthImgShow.at<uchar>( headImgCoor.Y, headImgCoor.X + i) = 0; }
-			if ( headImgCoor.X - i >= 0 )							{ g_DepthImgShow.at<uchar>( headImgCoor.Y, headImgCoor.X - i) = 0; }
-		}
-
-		/*
-		
-		for ( int i = 0; i < 25; ++i ) 
-		{
-			if ( headImgCoor.Y + i < g_DepthImgShow.size().height )	{ g_DepthImgBuff.setPixel ( headImgCoor.X, headImgCoor.Y + i, blackColor ); }
-			if ( headImgCoor.Y - i >= 0 )							{ g_DepthImgBuff.setPixel ( headImgCoor.X, headImgCoor.Y - i, blackColor ); }
-			if ( headImgCoor.X + i < g_DepthImgShow.size().width )	{ g_DepthImgBuff.setPixel ( headImgCoor.X + i, headImgCoor.Y, blackColor ); }
-			if ( headImgCoor.X - i >= 0 )							{ g_DepthImgBuff.setPixel ( headImgCoor.X - i, headImgCoor.Y, blackColor ); }
-		}
-		
-		*/
-
-		// GlobalUtility::ConvertDepthCvMat16uToGrayQImage ( g_DepthImgMat, g_DepthImgBuff );
-		// GlobalUtility::CopyQImageToCvMat8uc3 ( g_DepthImgBuff, g_DepthImgShow );
-
-		g_DepthGen.ConvertProjectiveToRealWorld ( 1, &headImgCoor, &headKinectCoor );
-
-		// 
-		// Calculate Head Coordinate of the Whole Scene
-		// 
-		
+		// Calculate Head Coordinate of the Whole Scene	
 		CalcWorldCoorOfHead ( headWorldCoor, headKinectCoor, g_ExtrMat );
 
+		/*
 		char headImgCoorStr[100];
 		char headKinectCoorStr[100];
 		char headWorldCoorStr[100];
 
-		// sprintf_s ( headImgCoorStr, "< %.6f, %.6f, %.6f >", headImgCoor.X, headImgCoor.Y, headImgCoor.Z );
-		// sprintf_s ( headKinectCoorStr, "< %.6f, %.6f, %.6f >", headKinectCoor.X, headKinectCoor.Y, headKinectCoor.Z );
-		// sprintf_s ( headWorldCoorStr, "< %.6f, %.6f, %.6f >", headWorldCoor.X, headWorldCoor.Y, headWorldCoor.Z );
+		sprintf_s ( headImgCoorStr, "< %.6f, %.6f, %.6f >", headImgCoor.X, headImgCoor.Y, headImgCoor.Z );
+		sprintf_s ( headKinectCoorStr, "< %.6f, %.6f, %.6f >", headKinectCoor.X, headKinectCoor.Y, headKinectCoor.Z );
+		sprintf_s ( headWorldCoorStr, "< %.6f, %.6f, %.6f >", headWorldCoor.X, headWorldCoor.Y, headWorldCoor.Z );
 
-		// PrintMatrix ( g_ExtrMat );
+		PrintMatrix ( g_ExtrMat );
 
-		// std::cout << "Head Image  Coor = " << std::string ( headImgCoorStr ) << std::endl;
-		// std::cout << "Head Kinect Coor = " << std::string ( headKinectCoorStr ) << std::endl;
-		// std::cout << "Head World  Coor = " << std::string ( headWorldCoorStr ) << std::endl;
+		std::cout << "Head Image  Coor = " << std::string ( headImgCoorStr ) << std::endl;
+		std::cout << "Head Kinect Coor = " << std::string ( headKinectCoorStr ) << std::endl;
+		std::cout << "Head World  Coor = " << std::string ( headWorldCoorStr ) << std::endl;
+		*/
 
 		// 
 		// Reset New Head World Coordinate when people move
@@ -489,19 +417,21 @@ void IdleProcessOfHeadTracking ( void )
 		g_Camera.SetCameraPos ( g_CameraPos );
 	
 		/*
-
-		std::cout << "In IdleProcessOfHeadTracking" << std::endl;
-		std::cout << "camPosX = " << camPosX << std::endl;
-		std::cout << "camPosY = " << camPosY << std::endl;
-		std::cout << "camPosZ = " << camPosZ << std::endl;
-		std::cout << "Out IdleProcessOfHeadTracking" << std::endl;
-		
+		std::cout	<< "In IdleProcessOfHeadTracking"	<< std::endl;
+		std::cout	<< "camPosX = "						<< camPosX	<< std::endl
+					<< "camPosY = "						<< camPosY	<< std::endl 
+					<< "camPosZ = "						<< camPosZ	<< std::endl;
+		std::cout	<< "Out IdleProcessOfHeadTracking"	<< std::endl;
 		*/
 	}
+	else {
+		GlobalUtility::ConvertDepthCvMat16uToGrayCvMat ( g_DepthImgMat, g_DepthImgShow );
+		// GlobalUtility::ConvertDepthCvMat16uToGrayQImage ( g_DepthImgMat, g_DepthImgShow );
+	}
 
-	// GlobalUtility::CopyDepthRawBufToCvMat16u ( g_DepthMD.Data(), depthImgMat );
+	// GlobalUtility::CopyDepthRawBufToCvMat16u			( g_DepthMD.Data(), depthImgMat );
 	// GlobalUtility::ConvertDepthCvMat16uToYellowCvMat ( depthImgMat, depthImgShow );
-	// GlobalUtility::ConvertDepthCvMat16uToGrayCvMat ( depthImgMat, depthImgShow );
+	// GlobalUtility::ConvertDepthCvMat16uToGrayCvMat	( depthImgMat, depthImgShow );
 
 	cv::namedWindow ( DEPTH_WIN_NAME, CV_WINDOW_AUTOSIZE );
 	cv::imshow ( DEPTH_WIN_NAME, g_DepthImgShow );
@@ -510,16 +440,13 @@ void IdleProcessOfHeadTracking ( void )
 
 	g_HeadTrackingFrameCount++;
 	g_CurrTickCount = GetTickCount();
+	std::cout	<< "FPS = " 
+				<< 1000 / ( ( double )( g_CurrTickCount - g_StartTickCount ) / ( double )( g_HeadTrackingFrameCount ) ) 
+				<< std::endl;
 
-	std::cout << "FPS = " << 1000 / ( ( double )( g_CurrTickCount - g_StartTickCount ) / ( double )( g_HeadTrackingFrameCount ) ) << std::endl;
-
-	g_CtlWndKey = cvWaitKey ( 20 );
-
-	// 
-	// Refresh Glut Window and Scene
-	// 
-
-	glutPostRedisplay ();
+	g_CtlWndKey = cvWaitKey ( 5 );
+	
+	glutPostRedisplay ();								// Refresh Glut Window and Scene
 
 }
 
@@ -535,7 +462,7 @@ void CalcWorldCoorOfHead (	XnPoint3D & headWorldCoor,
 
 	cv::Mat vec = cv::Mat::zeros(4, 1, CV_32FC1);
 	vec.at<float>(0, 0) = headKinectCoor.X;
-	vec.at<float>(1, 0) = headKinectCoor.Y * (-1.0f);						// Need to Pay Attention to Different Coordinate System
+	vec.at<float>(1, 0) = headKinectCoor.Y * ( -1.0f );						// Need to Pay Attention to Different Coordinate System
 	vec.at<float>(2, 0) = headKinectCoor.Z;
 	vec.at<float>(3, 0) = 1.0f;
 
@@ -561,10 +488,8 @@ void CalcWorldCoorOfHead (	XnPoint3D & headWorldCoor,
 
 bool ReadExtrParaFile ( const char * extrFile, cv::Mat & extrMat )
 {
-	// 
-	// Set pointers of Camera / Projector parameters
-	// Copy file names
-	// 
+	// Set Pointers of Camera / Projector Parameters
+	// Copy File Names
 
 	assert ( extrMat.rows == 4 && extrMat.cols == 4 );
 	assert ( extrMat.type() == CV_32FC1 );
@@ -578,8 +503,7 @@ bool ReadExtrParaFile ( const char * extrFile, cv::Mat & extrMat )
 	float para;
 
 	for ( int x = 0; x < 3; ++x )
-	for ( int y = 0; y < 4; ++y ) 
-	{
+	for ( int y = 0; y < 4; ++y ) {
 		fscanf_s ( fp, "%f\t", &para );
 		fscanf_s ( fp, "\n", &para );
 

@@ -24,9 +24,25 @@ public:
 	static bool SimpleDepthHandlingFunc2(	cv::Mat & destImgBuff, const xn::DepthGenerator & depthGen, XnPoint3D & headImgCoor );
 
 	static bool FindHeadCoordinate		(	const XnDepthPixel * srcDepthData, 
-											int nXRes, int nYRes, 
-											int & rowIndex, int & columnIndex, 
+											const int nXRes, 
+											const int nYRes, 
+											const double fXToZ, 
+											const double fYToZ, 
+											int & rowIndex, 
+											int & columnIndex, 
 											const xn::DepthGenerator & depthGen );
+
+	// 
+	// Get Local Minimum Depth Map
+	// 
+	
+	static bool GetLocalMinimumOfDepthMap ( const XnDepthPixel * srcDepthData, 
+											const int nXRes, 
+											const int nYRes,
+											const double fXToZ,
+											const double fYToZ, 
+											const xn::DepthGenerator & depthGen, 
+											std::vector<int> & minArray );
 
 private:
 
@@ -50,22 +66,30 @@ private:
 	// TODO:
 	// static int FindLocalMinimumOfRow(const cv::Mat & srcDepthMat);
 
-	static int FindLocalMinimumOfRow (	const XnDepthPixel * srcDepthData, int nXRes, int rowIndex, const xn::DepthGenerator & depthGen);
-
-	static bool IsPossiblyOnHeadFast (	const XnDepthPixel * srcDepthData, int nXRes, 
-										int rowIndex, int colIndex,
-										int & leftDeltaLen, int & rightDeltaLen,
+	static int FindLocalMinimumOfRow (	const XnDepthPixel * srcDepthData, 
+										const int nXRes, 
+										const int nYRes, 
+										const double fXToZ, 
+										const double fYToZ, 
+										const int rowIndex, 
 										const xn::DepthGenerator & depthGen );
 
-	static bool IsPossiblyOnHead	 (	const XnDepthPixel * srcDepthData, int nXRes, 
-										int rowIndex, int colIndex, 
+	static bool IsPossiblyOnHeadFast (	const XnDepthPixel * srcDepthData, 
+										const int nXRes, 
+										const int nYRes,
+										const double fXToZ, 
+										const double fYToZ,
+										const int rowIndex, 
+										const int colIndex,
+										int & leftDeltaLen, 
+										int & rightDeltaLen,
 										const xn::DepthGenerator & depthGen );
 
-	// 
-	// Get Local Minimum Depth Map
-	// 
-	
-	static bool GetLocalMinimumOfDepthMap ( const XnDepthPixel * srcDepthData, std::vector<int> & minArray, const xn::DepthGenerator & depthGen );
+	static bool IsPossiblyOnHead	 (	const XnDepthPixel * srcDepthData, 
+										int nXRes, 
+										int rowIndex, 
+										int colIndex, 
+										const xn::DepthGenerator & depthGen );
 
 };
 

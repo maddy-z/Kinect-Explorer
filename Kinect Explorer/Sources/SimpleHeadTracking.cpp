@@ -24,7 +24,7 @@
 // -------------------------------
 
 bool SimpleHeadTracking::
-	 SimpleDepthHandlingFunc ( QImage & destImgBuff, const xn::DepthGenerator & depthGen )
+	 SimpleDepthHandlingFunc  ( QImage & destImgBuff, const xn::DepthGenerator & depthGen )
 {
 	// 
 	// Invalid Depth Stream Input, then Return an Empty QImage.
@@ -93,7 +93,7 @@ bool SimpleHeadTracking::
 	result = GlobalUtility::CopyCvMat16uToDepthRawBuf ( depthMat, destDepthData );
 
 	int rIndex, cIndex;
-	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, rIndex, cIndex, depthGen ) ) 
+	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, 0.0f, 0.0f, rIndex, cIndex, depthGen ) ) 
 	{	
 		for (int i = 0; i < 25; ++i) 
 		{
@@ -105,6 +105,7 @@ bool SimpleHeadTracking::
 	}
 
 	// Optional Step 6: Draw Local Minimum Point Per Line
+	/*
 	std::vector<int> minArray;
 	SimpleHeadTracking::GetLocalMinimumOfDepthMap(destDepthData, minArray, depthGen);
 
@@ -112,6 +113,7 @@ bool SimpleHeadTracking::
 		if (minArray[i] == -1) { continue; }
 		destImgBuff.setPixel(minArray[i], i, whiteColor);
 	}
+	*/
 
 	delete [] destDepthData;
 
@@ -183,7 +185,7 @@ bool SimpleHeadTracking::
 	int rIndex, cIndex;
 	bool flag = false;
 
-	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, rIndex, cIndex, depthGen ) ) 
+	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, 0.0f, 0.0f, rIndex, cIndex, depthGen ) ) 
 	{	
 		// Return Head Coordinate Value
 		headImgCoor.X = cIndex;
@@ -208,9 +210,9 @@ bool SimpleHeadTracking::
 	std::vector<int> minArray;
 	SimpleHeadTracking::GetLocalMinimumOfDepthMap ( destDepthData, minArray, depthGen );
 
-	for (int i = 0; i < minArray.size(); ++i) {
+	for ( int i = 0; i < minArray.size(); ++i ) {
 		if (minArray[i] == -1) { continue; }
-		destImgBuff.setPixel(minArray[i], i, whiteColor);
+		destImgBuff.setPixel ( minArray[i], i, whiteColor );
 	}
 	*/
 
@@ -222,50 +224,72 @@ bool SimpleHeadTracking::
 bool SimpleHeadTracking::
 	 SimpleDepthHandlingFunc2 ( cv::Mat & depthMat, const xn::DepthGenerator & depthGen, XnPoint3D & headImgCoor )
 {
+	XnFieldOfView fov;
+	depthGen.GetFieldOfView ( fov );
+	
+	const double fXToZ = tan ( fov.fHFOV / 2.0f ) * 2.0f;
+	const double fYToZ = tan ( fov.fVFOV / 2.0f ) * 2.0f;
+
 	// 
-	// INVALID Depth Stream Input, then Return an Empty QImage.
+	// INVALID Depth Stream Input, Then Return an Empty QImage
 	// 
 
 	xn::DepthMetaData depthMD;
 	depthGen.GetMetaData ( depthMD );
 
-	const XnDepthPixel * srcDepthData = depthMD.Data ();
+	const XnDepthPixel * const srcDepthData = depthMD.Data ();
 	if ( srcDepthData == NULL ) {
 		return false;
 	}
 
 	bool result = false;
-	int nXRes = depthMD.XRes(), nYRes = depthMD.YRes ();
-
-	assert ( depthMat.size().height == nYRes && depthMat.size().width == nXRes );
-	assert ( depthMat.type() == CV_16UC1 );
+	const int nOriginXRes = depthMD.XRes(), nOriginYRes = depthMD.YRes ();
+	const int nXRes = depthMat.cols, nYRes = depthMat.rows;
 
 	// Step 0:	Preparation Work -- Copy Depth Raw Data to cv::Mat
-	// cv::Mat depthMat ( nYRes, nXRes, CV_16UC1 );
-	result = GlobalUtility::CopyDepthRawBufToCvMat16u ( srcDepthData, depthMat );
+	cv::Mat depthBiggerMat ( nOriginYRes, nOriginXRes, CV_16UC1 );
+
+	assert ( depthBiggerMat.size ().height == nOriginYRes && depthBiggerMat.size ().width == nOriginXRes );
+	assert ( depthMat.rows == ( ( nOriginYRes + 1 ) / 2 ) && depthMat.cols == ( ( nOriginXRes + 1 ) / 2 ) );
+	assert ( depthBiggerMat.type () == CV_16UC1 && depthMat.type () == CV_16UC1 );
+
+	result = GlobalUtility::CopyDepthRawBufToCvMat16u ( srcDepthData, depthBiggerMat );
+	OpenCvUtility::DownSamplingCvMat16u ( depthBiggerMat, 2, depthMat );
+
+	/*
+	cv::Mat depthBiggerShow ( nOriginYRes, nOriginXRes, CV_8UC1 );
+	GlobalUtility::ConvertDepthCvMat16uToGrayCvMat ( depthBiggerMat, depthBiggerShow );
+	cv::namedWindow ( "Tmp Bigger Image", CV_WINDOW_AUTOSIZE );
+	cv::imshow ( "Tmp Bigger Image", depthBiggerShow );
+
+	return true;
+	*/
 
 	// Step 1:	Filter Depth Data By Threshold Value
 	const int thresholdDepthValue = 5000, newDepthValue = 6000;
 	result = GlobalUtility::ConvertCvMat16uByThresholdValue ( depthMat, depthMat, thresholdDepthValue, newDepthValue, true );
 
-	// Step 2:	Dilating Depth Data
-	const int seSize = 3;
-	cv::Mat se = cv::getStructuringElement ( cv::MORPH_ELLIPSE , cv::Size(5, 5) );
-	cv::erode ( depthMat, depthMat, se, cv::Point(-1, -1), 2 );
+	// Step 2:	Closing and Eroding Depth Data
+	cv::Mat se = cv::getStructuringElement ( cv::MORPH_ELLIPSE , cv::Size ( 5, 5 ) );
+	cv::erode ( depthMat, depthMat, se, cv::Point ( -1, -1 ), 1 );
+	cv::dilate ( depthMat, depthMat, se, cv::Point ( -1, -1 ), 1 );
+
+	se = cv::getStructuringElement ( cv::MORPH_ELLIPSE , cv::Size ( 3, 3 ) );
+	cv::erode ( depthMat, depthMat, se, cv::Point ( -1, -1 ), 2 );
 
 	// Step 3:	Filter Depth Data
 	cv::GaussianBlur ( depthMat, depthMat, cv::Size ( 3, 3 ), 1.0f );
 
 	// Step 4:	Find and Draw Rough Head Coordinates in Preprocessed Range Data
-	XnDepthPixel * destDepthData = new XnDepthPixel[nXRes * nYRes];
+	XnDepthPixel * destDepthData = new XnDepthPixel[depthMat.cols * depthMat.rows];
 	result = GlobalUtility::CopyCvMat16uToDepthRawBuf ( depthMat, destDepthData );
 
-	// Step 6:	Start to try finding head
+	// Step 5:	Start to try finding head
 	int rIndex, cIndex;
 	bool flag = false;
 
-	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, rIndex, cIndex, depthGen ) ) 
-	{	
+	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, fXToZ, fYToZ, rIndex, cIndex, depthGen ) ) 
+	{
 		// Return Head Coordinate Value
 		headImgCoor.X = cIndex;
 		headImgCoor.Y = rIndex;
@@ -273,6 +297,16 @@ bool SimpleHeadTracking::
 
 		flag = true;
 	}
+
+	/*
+	std::vector<int> minArray;
+	SimpleHeadTracking::GetLocalMinimumOfDepthMap ( destDepthData, nXRes, nYRes, fXToZ, fYToZ, depthGen, minArray );
+	for ( int i = 0; i < minArray.size(); ++i ) {
+		if ( minArray[i] != -1 ) { 
+			depthMat.at<unsigned short>( i, minArray[i] ) = 255;
+		}
+	}
+	*/
 
 	delete [] destDepthData;
 
@@ -372,7 +406,6 @@ bool SimpleHeadTracking::SmoothDepthData(const XnDepthPixel * srcDepthData,
 	}
 
 	/*
-
 	for (int i = 0; i < nYRes; ++i) 
 	{
 		for (int j = 0; j < nXRes; ++j) 
@@ -416,12 +449,13 @@ bool SimpleHeadTracking::SmoothDepthData(const XnDepthPixel * srcDepthData,
 }
 
 int SimpleHeadTracking::FindLocalMinimumOfRow ( const XnDepthPixel * srcDepthData, 
-												int nXRes,
-												int rowIndex,
+												const int nXRes, 
+												const int nYRes,
+												const double fXToZ, 
+												const double fYToZ,
+												const int rowIndex,
 												const xn::DepthGenerator & depthGen )
 {
-	// qDebug() << "Entering:\tint SimpleHeadTracking::FindLocalMinimumOfRow()";
-
 	int leftDeltaLen, rightDeltaLen;
 	const XnDepthPixel * pDepthData = srcDepthData + rowIndex * nXRes + 1;
 	
@@ -430,50 +464,56 @@ int SimpleHeadTracking::FindLocalMinimumOfRow ( const XnDepthPixel * srcDepthDat
 	for ( int i = 1; i < nXRes - 1; ++i, ++pDepthData ) 
 	{
 		tmp = (*pDepthData);
-		if ( tmp == 0 || tmp > *(pDepthData-1) || tmp > *(pDepthData+1) )	{			// Not Local Minimum Value
+		if ( tmp == 0 || tmp > *(pDepthData - 1) || tmp > *(pDepthData + 1) )	{			// Not Local Minimum Value
 			continue;
 		}
 		
-		if ( IsPossiblyOnHeadFast(srcDepthData, nXRes, rowIndex, i, leftDeltaLen, rightDeltaLen, depthGen) == true ) 
-		{
-			// qDebug() << "Leaving:\tint SimpleHeadTracking::FindLocalMinimumOfRow()";
-			return i + (rightDeltaLen - leftDeltaLen) / 2;
+		if ( IsPossiblyOnHeadFast ( srcDepthData, nXRes, nYRes, fXToZ, fYToZ, rowIndex, i, leftDeltaLen, rightDeltaLen, depthGen ) == true ) {
+			return i + ( rightDeltaLen - leftDeltaLen ) / 2;
 		}
 
 		i += rightDeltaLen;
 	}
 
-	//for (int i = 1; i < nXRes - 1; ++i, ++pDepthData) 
-	//{
-	//	//XnDepthPixel prevPixel = srcDepthData[rowIndex * nXRes + (i-1)];
-	//	//XnDepthPixel postPixel = srcDepthData[rowIndex * nXRes + (i+1)];
-	//	//XnDepthPixel curPixel = srcDepthData[rowIndex * nXRes + i];
+	/*
+	for (int i = 1; i < nXRes - 1; ++i, ++pDepthData) 
+	{
+		//XnDepthPixel prevPixel = srcDepthData[rowIndex * nXRes + (i-1)];
+		//XnDepthPixel postPixel = srcDepthData[rowIndex * nXRes + (i+1)];
+		//XnDepthPixel curPixel = srcDepthData[rowIndex * nXRes + i];
 
-	//	//if (!(curPixel <= prevPixel && curPixel <= postPixel))								// Not Local Minimum Value
-	//	//{
-	//	//	continue;
-	//	//}
+		//if (!(curPixel <= prevPixel && curPixel <= postPixel))								// Not Local Minimum Value
+		//{
+		//	continue;
+		//}
 
-	//	if ( (*pDepthData) > *(pDepthData-1) || (*pDepthData) > *(pDepthData+1) )				// Not Local Minimum Value
-	//	{
-	//		continue;
-	//	}
-	//	
-	//	if ( IsPossiblyOnHead(srcDepthData, nXRes, rowIndex, i, depthGen) == true )
-	//	{
-	//		qDebug() << "Leaving:\tint SimpleHeadTracking::FindLocalMinimumOfRow()";
-	//		return i;
-	//	}
-	//}
+		if ( (*pDepthData) > *(pDepthData-1) || (*pDepthData) > *(pDepthData+1) )				// Not Local Minimum Value
+		{
+			continue;
+		}
+		
+		if ( IsPossiblyOnHead(srcDepthData, nXRes, rowIndex, i, depthGen) == true )
+		{
+			qDebug() << "Leaving:\tint SimpleHeadTracking::FindLocalMinimumOfRow()";
+			return i;
+		}
+	}
+	*/
 
 	// qDebug() << "Leaving:\tint SimpleHeadTracking::FindLocalMinimumOfRow()";
 
-	return (-1);						// Not Find Local Minimum Point Of Line #rowIndex
+	return ( -1 );						// Not Find Local Minimum Point Of Line #rowIndex
 }
 
-bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthData, int nXRes, 
-											    int rowIndex, int colIndex, 
-											    int & leftDeltaLen, int & rightDeltaLen,
+bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthData, 
+												const int nXRes, 
+												const int nYRes, 
+												const double fXToZ, 
+												const double fYToZ,
+											    const int rowIndex, 
+												const int colIndex, 
+											    int & leftDeltaLen, 
+												int & rightDeltaLen,
 											    const xn::DepthGenerator & depthGen )
 {
 	const int baseIndex = rowIndex * nXRes + colIndex;
@@ -521,8 +561,8 @@ bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthDat
 	// 
 	// Convert Depth Map into Real World Coordinates
 	// 
-	
-	depthGen.ConvertProjectiveToRealWorld ( 2, projectiveBoundPts, realBoundPts );
+	OpenNiUtility::ConvertProjectiveToRealWorld ( 2, nXRes, nYRes, fXToZ, fYToZ, projectiveBoundPts, realBoundPts );
+	// depthGen.ConvertProjectiveToRealWorld ( 2, projectiveBoundPts, realBoundPts );
 
 	if ( realBoundPts[1].X - realBoundPts[0].X < 150 || realBoundPts[1].X - realBoundPts[0].X > 225 ) {
 		return false;
@@ -538,7 +578,8 @@ bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthDat
 	projectiveCenterPt.Y = rowIndex;
 	projectiveCenterPt.Z = distance;
 
-	depthGen.ConvertProjectiveToRealWorld ( 1, &projectiveCenterPt, &realCenterPt );
+	OpenNiUtility::ConvertProjectiveToRealWorld ( 1, nXRes, nYRes, fXToZ, fYToZ, &projectiveCenterPt, &realCenterPt );
+	// depthGen.ConvertProjectiveToRealWorld ( 1, &projectiveCenterPt, &realCenterPt );
 	
 	// -----------------------------------------------------------
 	// -----------------------------------------------------------
@@ -560,8 +601,10 @@ bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthDat
 	rightOuterBoundRealPts[1].Y = realCenterPt.Y;
 	rightOuterBoundRealPts[1].Z = realCenterPt.Z;
 
-	depthGen.ConvertRealWorldToProjective(2, leftOuterBoundRealPts, leftOuterBoundProjPts);
-	depthGen.ConvertRealWorldToProjective(2, rightOuterBoundRealPts, rightOuterBoundProjPts);
+	OpenNiUtility::ConvertRealWorldToProjective ( 2, nXRes, nYRes, fXToZ, fYToZ, leftOuterBoundRealPts, leftOuterBoundProjPts );
+	OpenNiUtility::ConvertRealWorldToProjective ( 2, nXRes, nYRes, fXToZ, fYToZ, rightOuterBoundRealPts, rightOuterBoundProjPts );
+	// depthGen.ConvertRealWorldToProjective(2, leftOuterBoundRealPts, leftOuterBoundProjPts);
+	// depthGen.ConvertRealWorldToProjective(2, rightOuterBoundRealPts, rightOuterBoundProjPts);
 	
 	int leftOuterBoundIndex[2], rightOuterBoundIndex[2];
 
@@ -573,8 +616,7 @@ bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthDat
 	rightOuterBoundIndex[0] = rightOuterBoundProjPts[0].X;
 	rightOuterBoundIndex[1] = rightOuterBoundProjPts[1].X;
 
-	for (int i = 0; i < 2; ++i) 
-	{
+	for (int i = 0; i < 2; ++i) {
 		if (leftOuterBoundIndex[i] < 0 || leftOuterBoundIndex[i] >= nXRes) {
 			return false;
 		}
@@ -588,22 +630,19 @@ bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthDat
 
 	int bi = rowIndex * nXRes;
 
-	for (int i = leftOuterBoundIndex[0]; i < leftOuterBoundIndex[1]; ++i) 
-	{
+	for (int i = leftOuterBoundIndex[0]; i < leftOuterBoundIndex[1]; ++i) {
 		if (srcDepthData[bi+i] > 0 && srcDepthData[bi+i] - distance < 250/* && srcDepthData[bi + i] - distance > -220*/) {
 			return false;
 		}
 	}
 
-	for (int i = rightOuterBoundIndex[0]; i <= rightOuterBoundIndex[1]; ++i)
-	{
+	for (int i = rightOuterBoundIndex[0]; i <= rightOuterBoundIndex[1]; ++i) {
 		if (srcDepthData[bi+i] > 0 && srcDepthData[bi + i] - distance < 250/* && srcDepthData[bi + i] - distance > -220*/) {
 			return false;
 		}
 	}
 
 	/*
-	
 	if (leftOuterIndex < 0) { leftOuterIndex = 0; return false; }
 	if (rightOuterIndex >= nXRes) { rightOuterIndex = nXRes - 1; return false; }
 
@@ -613,7 +652,6 @@ bool SimpleHeadTracking::IsPossiblyOnHeadFast ( const XnDepthPixel * srcDepthDat
 	if (leftOuterDepth - distance <= 200 || rightOuterDepth - distance <= 200) {
 		return false;
 	}
-
 	*/
 
 	return true;
@@ -741,11 +779,14 @@ bool SimpleHeadTracking::IsPossiblyOnHead(const XnDepthPixel * srcDepthData,
 }
 
 bool SimpleHeadTracking::FindHeadCoordinate ( const XnDepthPixel * srcDepthData, 
-											  int nXRes, 
-											  int nYRes, 
+											  const int nXRes, 
+											  const int nYRes, 
+											  const double fXToZ,
+											  const double fYToZ,
 											  int & rowIndex, 
 											  int & colIndex, 
-											  const xn::DepthGenerator & depthGen )
+											  const xn::DepthGenerator & depthGen 
+											  )
 {
 	if ( srcDepthData == NULL ) { return false; }
 
@@ -759,7 +800,8 @@ bool SimpleHeadTracking::FindHeadCoordinate ( const XnDepthPixel * srcDepthData,
 
 	for ( int i = 0; i < nYRes; ++i ) 
 	{
-		int cIndex = SimpleHeadTracking::FindLocalMinimumOfRow ( srcDepthData, nXRes, i, depthGen );
+		int cIndex = SimpleHeadTracking::FindLocalMinimumOfRow ( srcDepthData, nXRes, nYRes, fXToZ, fYToZ, i, depthGen );
+		
 		if ( cIndex == -1 )
 		{
 			if ( lineCount == 0 ) {
@@ -775,7 +817,8 @@ bool SimpleHeadTracking::FindHeadCoordinate ( const XnDepthPixel * srcDepthData,
 			projHeadCoor[1].Y = i - 1;
 			projHeadCoor[1].Z = totalDistance / lineCount;
 
-			depthGen.ConvertProjectiveToRealWorld ( 2, projHeadCoor, realHeadCoor );
+			OpenNiUtility::ConvertProjectiveToRealWorld ( 2, nXRes, nYRes, fXToZ, fYToZ, projHeadCoor, realHeadCoor );
+			// depthGen.ConvertProjectiveToRealWorld ( 2, projHeadCoor, realHeadCoor );
 
 			if ( realHeadCoor[0].Y - realHeadCoor[1].Y < 300 && realHeadCoor[0].Y - realHeadCoor[1].Y > 200 ) 
 			{
@@ -789,9 +832,10 @@ bool SimpleHeadTracking::FindHeadCoordinate ( const XnDepthPixel * srcDepthData,
 			projHeadCoor[0].Y = lastStartRowIndex + lineCount - 1;
 			projHeadCoor[0].Z = totalDistance / lineCount;
 
-			depthGen.ConvertProjectiveToRealWorld(1, projHeadCoor, realHeadCoor);
+			OpenNiUtility::ConvertProjectiveToRealWorld ( 1, nXRes, nYRes, fXToZ, fYToZ, projHeadCoor, realHeadCoor );
+			// depthGen.ConvertProjectiveToRealWorld(1, projHeadCoor, realHeadCoor);
 
-			if ( realHeadCoor[0].Y - realHeadCoor[1].Y >= 100 ) 
+			if ( realHeadCoor[0].Y - realHeadCoor[1].Y >= 120 ) 
 			{
 				lastStartRowIndex = i + 1;
 				lineCount = 0;
@@ -813,22 +857,26 @@ bool SimpleHeadTracking::FindHeadCoordinate ( const XnDepthPixel * srcDepthData,
 // Get Local Minimum Depth Map
 // 
 	
-bool SimpleHeadTracking::GetLocalMinimumOfDepthMap(const XnDepthPixel * srcDepthData, std::vector<int> & minArray, const xn::DepthGenerator & depthGen)
+bool SimpleHeadTracking::GetLocalMinimumOfDepthMap (	const XnDepthPixel * srcDepthData, 
+														const int nXRes, 
+														const int nYRes,
+														const double fXToZ,
+														const double fYToZ, 
+														const xn::DepthGenerator & depthGen, 
+														std::vector<int> & minArray )
 {
 	if (srcDepthData == NULL) {
 		return false;
 	}
 
-	xn::DepthMetaData depthMD;
-	depthGen.GetMetaData(depthMD);
+	// xn::DepthMetaData depthMD;
+	// depthGen.GetMetaData(depthMD);
 
 	minArray.clear();
 
-	int nXRes = depthMD.XRes();
-	int nYRes = depthMD.YRes();
-
 	for (int i = 0; i < nYRes; ++i) {
-		int index = SimpleHeadTracking::FindLocalMinimumOfRow(srcDepthData, nXRes, i, depthGen);
+		int index = SimpleHeadTracking::FindLocalMinimumOfRow ( srcDepthData, nXRes, nYRes, fXToZ, fYToZ, i, depthGen);
+		// int index = SimpleHeadTracking::FindLocalMinimumOfRow(srcDepthData, nXRes, i, depthGen);
 		minArray.push_back(index);
 	}
 

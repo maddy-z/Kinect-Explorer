@@ -1,5 +1,11 @@
-﻿生成启动时间为 2005/7/30 星期六 23:30:34。
+﻿生成启动时间为 2005/1/1 星期六 4:21:13。
+     1>项目“C:\Users\maddy\Desktop\Kinect-Explorer\View-Dependent-Proj\View-Dependent-Proj.vcxproj”在节点 2 上(clean 个目标)。
+     1>_PrepareForClean:
+         正在删除文件“Debug\View-Dependent-Proj.lastbuildstate”。
+     1>C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets(74,5): warning : 对路径“C:\WINDOWS\MICROSOFT.NET\FRAMEWORK\V2.0.50727\MSCORWKS.DLL”的访问被拒绝。
+     1>C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets(74,5): warning : 对路径“C:\WINDOWS\MICROSOFT.NET\FRAMEWORK\V4.0.30319\CLR.DLL”的访问被拒绝。
+     1>已完成生成项目“C:\Users\maddy\Desktop\Kinect-Explorer\View-Dependent-Proj\View-Dependent-Proj.vcxproj”(clean 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:00.00
+已用时间 00:00:00.02

@@ -38,8 +38,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
-    <IncludePath>..\3rd Party Lib\include\OpenNI;..\3rd Party Lib\include\OpenCV_2.3.1;..\3rd Party Lib\include\OpenCV_2.3.1\opencv2;$(IncludePath)</IncludePath>
-    <LibraryPath>..\3rd Party Lib\lib\OpenNI;..\3rd Party Lib\lib\OpenCV_2.3.1;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Qt\4.8.0\include\Qt;..\3rd Party Lib\include\OpenNI;..\3rd Party Lib\include\OpenCV_2.3.1;..\3rd Party Lib\include\OpenCV_2.3.1\opencv2;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Qt\4.8.0\lib;..\3rd Party Lib\lib\OpenNI;..\3rd Party Lib\lib\OpenCV_2.3.1;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -48,7 +48,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenNI.lib;opencv_core231d.lib;opencv_highgui231d.lib;opencv_imgproc231d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenNI.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;opencv_core231d.lib;opencv_highgui231d.lib;opencv_imgproc231d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -65,17 +65,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GlobalUtility.cpp" />
+    <ClCompile Include="..\Kinect Explorer\Sources\GlobalUtility.cpp" />
+    <ClCompile Include="..\Kinect Explorer\Sources\OpenCvUtility.cpp" />
+    <ClCompile Include="..\Kinect Explorer\Sources\OpenNiUtility.cpp" />
     <ClCompile Include="KinectExplorer.cpp" />
-    <ClCompile Include="OpenNIUtility.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GlobalUtility.h" />
-    <ClInclude Include="OpenNIUtility.h" />
-    <ClInclude Include="OpenNIWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenNiProductConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Kinect Explorer\Sources\GlobalUtility.h" />
+    <ClInclude Include="..\Kinect Explorer\Sources\OpenCvUtility.h" />
+    <ClInclude Include="..\Kinect Explorer\Sources\OpenNiUtility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

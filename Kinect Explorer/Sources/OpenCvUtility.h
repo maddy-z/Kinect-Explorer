@@ -21,6 +21,8 @@ double CalcBiggestDepth8u(const cv::Mat & srcDepthMat);
 
 void CalcMinimumOfDepthHistogram ( const cv::Mat & srcDepthMat, int & minIndex, int & minHistValue, int threshold = OPENNI_MAX_DEPTH );
 
+bool DownSamplingCvMat16u ( const cv::Mat & srcMat, int factor, cv::Mat & destMat );
+
 inline void HSV2RGB ( unsigned short H, uchar S, uchar V, uchar & R, uchar & G, uchar & B )
 {
 	// 

@@ -81,4 +81,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\OpenNiProductConfig.xml">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>

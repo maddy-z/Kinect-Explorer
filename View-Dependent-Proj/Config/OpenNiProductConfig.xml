@@ -52,15 +52,8 @@
     <!-- Create an image node. If it fails, continue anyway. -->
     <Node type="Image" >
       <Configuration>
-        <!-- Uncomment to set requested mode
-				<MapOutputMode xRes="640" yRes="480" FPS="30"/> 
-				-->
         <MapOutputMode xRes="640" yRes="480" FPS="30"/>
         <Mirror on="false" />
-
-        <!-- Uncomment to override global mirror
-				<Mirror on="false" /> 
-				-->
       </Configuration>
     </Node>
 

@@ -1,10 +1,8 @@
-// ==========
-//  Includes
-// ==========
-
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+
+#include <Windows.h>
 
 #include <opencv2\opencv.hpp>
 
@@ -15,14 +13,14 @@
 	#include <gl/glut.h>
 #endif
 
-#include <XnCppWrapper.h>
-#include <XnEnumerationErrors.h>
-#include <XnPrdNode.h>
-#include <XnPrdNodeInfo.h>
+#include	<XnCppWrapper.h>
+// #include	<XnEnumerationErrors.h>
+// #include	<XnPrdNode.h>
+// #include	<XnPrdNodeInfo.h>
 
-#include "GlobalUtility.h"
-#include "OpenNIUtility.h"
-#include "OpenNIWrapper.h"
+#include	"..\Kinect Explorer\Sources\GlobalUtility.h"
+#include	"..\Kinect Explorer\Sources\OpenCvUtility.h"
+#include	"..\Kinect Explorer\Sources\OpenNiUtility.h"
 
 #define		CONFIG_XML_PATH			"OpenNiProductConfig.xml"
 
@@ -32,21 +30,36 @@
 #define		INVALID_KEY_VALUE		-1
 #define		ESC_KEY_VALUE			27
 
+// #define		HANDLING_IMAGE_DATA
+// #define		HANDLING_DEPTH_DATA
+
 // -----------------
 //  Global Constant
 // -----------------
 
-xn::Context g_Context;
-xn::ScriptNode g_ScriptNode;
+xn::Context			g_Context;
 
-xn::DepthGenerator g_DepthGen;
-xn::ImageGenerator g_ImageGen;
-xn::DepthMetaData g_DepthMD;
-xn::ImageMetaData g_ImageMD;
+xn::DepthGenerator	g_DepthGen;
+xn::ImageGenerator	g_ImageGen;
+xn::DepthMetaData	g_DepthMD;
+xn::ImageMetaData	g_ImageMD;
 
-// ---------------------
-//  Forward Declaration
-// ---------------------
+cv::Mat		g_DepthImgShow;
+cv::Mat		g_DepthImgMat;
+cv::Mat		g_ColorImgMat;
+
+// 
+// Statistic Variables
+// 
+
+DWORD		g_StartTickCount;
+DWORD		g_CurrTickCount;
+
+long		g_HeadTrackingFrameCount;
+
+// ---------------
+//  Main Function 
+// ---------------
 
 int main ( int argc, char * argv[] )
 {
@@ -54,177 +67,192 @@ int main ( int argc, char * argv[] )
 	// Initialize OpenNI Settings
 	// 
 
-	int ctlWndKey = -1;
-
 	XnStatus nRetVal = XN_STATUS_OK;
+	xn::ScriptNode scriptNode;
 	xn::EnumerationErrors errors;
 
 	// 
 	// Initialize Context Object
 	// 
-	nRetVal = g_Context.InitFromXmlFile(CONFIG_XML_PATH, g_ScriptNode, &errors);
-	if (nRetVal == XN_STATUS_NO_NODE_PRESENT) 
-	{
+
+	nRetVal = g_Context.InitFromXmlFile ( CONFIG_XML_PATH, scriptNode, &errors );
+	
+	if ( nRetVal == XN_STATUS_NO_NODE_PRESENT ) {
 		XnChar strError[1024];
 		errors.ToString(strError, 1024);
-		printf("XN_STATUS_NO_NODE_PRESENT:\n%s\n", strError);
-		system("pause");
+		printf ( "XN_STATUS_NO_NODE_PRESENT:\n%s\n", strError );
+		system ( "pause" );
 
-		return (nRetVal);
+		return ( nRetVal );
 	}
-	else if (nRetVal != XN_STATUS_OK)
-	{
-		printf("Open failed: %s\n", xnGetStatusString(nRetVal));	
-		system("pause");
+	else if ( nRetVal != XN_STATUS_OK ) {
+		printf ( "Open failed: %s\n", xnGetStatusString(nRetVal) );	
+		system ( "pause" );
 
-		return (nRetVal);
+		return ( nRetVal );
 	}
 
 	// 
-	// Handle the Depth Generator Node.
+	// Handle Image & Depth Generator Node
 	// 
-	nRetVal = g_Context.FindExistingNode(XN_NODE_TYPE_DEPTH, g_DepthGen);
-	if (nRetVal != XN_STATUS_OK)
-	{
-		printf("No depth node exists! Please Check your XML.\n");
-		return (nRetVal);
+
+	bool colorFlag = true;
+	bool depthFlag = true;
+
+	nRetVal = g_Context.FindExistingNode ( XN_NODE_TYPE_DEPTH, g_DepthGen );
+	if ( nRetVal != XN_STATUS_OK ) {
+		printf("No depth node exists!\n");
+		depthFlag = false;
 	}
-	
-	// 
-	// Handle the Image Generator node
-	// 
-	nRetVal = g_Context.FindExistingNode(XN_NODE_TYPE_IMAGE, g_ImageGen);
-	if (nRetVal != XN_STATUS_OK)
-	{
-		printf("No image node exists! Please Check your XML.\n");
-		return (nRetVal);
+	nRetVal = g_Context.FindExistingNode ( XN_NODE_TYPE_IMAGE, g_ImageGen );
+	if ( nRetVal != XN_STATUS_OK ) {
+		printf("No image node exists!\n");
+		colorFlag = false;
 	}
 
 	// g_DepthGen.GetAlternativeViewPointCap().SetViewPoint( g_ImageGen );
 
-	g_DepthGen.GetMetaData ( g_DepthMD );
-	g_ImageGen.GetMetaData ( g_ImageMD );
+	if ( depthFlag ) {
+		g_DepthGen.GetMetaData ( g_DepthMD );
+		assert ( g_DepthMD.PixelFormat() == XN_PIXEL_FORMAT_GRAYSCALE_16_BIT );
+	}
+	if ( colorFlag ) {
+		g_ImageGen.GetMetaData ( g_ImageMD );
+		assert ( g_ImageMD.PixelFormat() == XN_PIXEL_FORMAT_RGB24 );
+	}
 
-	assert (g_ImageMD.PixelFormat() == XN_PIXEL_FORMAT_RGB24);
-
-	//
-	// Create Showing Window.
-	//
-
-	cv::namedWindow(IMAGE_WIN_NAME, CV_WINDOW_AUTOSIZE);
-	cv::namedWindow(DEPTH_WIN_NAME, CV_WINDOW_AUTOSIZE);
-
-	cv::Mat depthImgMat(g_DepthMD.YRes(), g_DepthMD.XRes(), CV_16UC1);
-	cv::Mat depthImgShow(g_DepthMD.YRes(), g_DepthMD.XRes(), CV_8UC3);
-
-	cv::Mat colorImgMat(g_ImageMD.YRes(), g_ImageMD.XRes(), CV_8UC3);
-
+	g_DepthImgShow = cv::Mat ( g_DepthMD.YRes(), g_DepthMD.XRes(), CV_8UC1  );
+	g_DepthImgMat  = cv::Mat ( g_DepthMD.YRes(), g_DepthMD.XRes(), CV_16UC1 );
+	g_ColorImgMat  = cv::Mat ( g_ImageMD.YRes(), g_ImageMD.XRes(), CV_8UC3  );
+	
 	// 
 	// Start to Loop
 	// 
 
-	while (ctlWndKey != ESC_KEY_VALUE) 
-	{
-		// 
-		// Try to Get New Frame From Kinect
-		// 
+	bool flipColor = true;
+	int ctlWndKey = -1;
+
+	g_StartTickCount = GetTickCount();
+	g_HeadTrackingFrameCount = 0;
 	
-		nRetVal = g_Context.WaitAnyUpdateAll();
+	while ( ctlWndKey != ESC_KEY_VALUE ) 
+	{
+		nRetVal = g_Context.WaitOneUpdateAll ( g_DepthGen );
+		// nRetVal = g_Context.WaitAnyUpdateAll();
 
-		g_DepthGen.GetMetaData(g_DepthMD);
-		g_ImageGen.GetMetaData(g_ImageMD);
+#ifdef HANDLING_IMAGE_DATA
 
-		assert (g_ImageMD.FullXRes() == g_ImageMD.XRes());
-		assert (g_ImageMD.FullYRes() == g_ImageMD.YRes());
-		
-		assert (g_DepthMD.FullXRes() == g_DepthMD.XRes());
-		assert (g_DepthMD.FullYRes() == g_DepthMD.YRes());
-
-		int depthHeight = g_DepthMD.YRes(), depthWidth = g_DepthMD.XRes();
-		// int depthMatStep = depthImgMat.step;
-		const XnDepthPixel * srcDepthData = g_DepthMD.Data();
-
-		for (int i = 0; i < depthHeight; ++i) 
+		if ( colorFlag ) 
 		{
-			XnDepthPixel * depthData = (XnDepthPixel *)(depthImgMat.ptr(i));
+			g_ImageGen.GetMetaData ( g_ImageMD );
 
-			for (int j = 0; j < depthWidth; ++j, ++depthData, ++srcDepthData) 
-			{
-				*depthData = *srcDepthData;
+			assert ( g_ImageMD.FullXRes() == g_ImageMD.XRes() );
+			assert ( g_ImageMD.FullYRes() == g_ImageMD.YRes() );
+
+			GlobalUtility::CopyColorRawBufToCvMat8uc3 ( (const XnRGB24Pixel *)(g_ImageMD.Data()), g_ColorImgMat );
+	
+			if ( ctlWndKey == 's' || ctlWndKey == 'S' ) {												// Switch
+				flipColor = !flipColor;
 			}
+			if ( flipColor ) {
+				cv::cvtColor ( g_ColorImgMat, g_ColorImgMat, CV_RGB2BGR );
+			}
+
+			cv::namedWindow ( IMAGE_WIN_NAME, CV_WINDOW_AUTOSIZE );
+			cv::imshow ( IMAGE_WIN_NAME, g_ColorImgMat );
 		}
 
-		memcpy(colorImgMat.data, g_ImageMD.Data(), colorImgMat.channels() * colorImgMat.size().area());
-		// memcpy(depthImgMat.data, g_DepthMD.Data(), depthImgMat.channels() * depthImgMat.size().area() * 2);
+#endif
+
+#ifdef HANDLING_DEPTH_DATA
+
+		if ( depthFlag ) 
+		{
+			g_DepthGen.GetMetaData(g_DepthMD);
 		
-		cv::cvtColor(colorImgMat, colorImgMat, CV_RGB2BGR);
-		GlobalUtility::ConvertDepthToColor(depthImgMat, depthImgShow, g_DepthGen.GetDeviceMaxDepth());
-		// cv::cvtColor(depthImgShow, depthImgShow, CV_RGB2BGR);
+			// assert ( g_DepthMD.FullXRes() == g_DepthMD.XRes() );
+			// assert ( g_DepthMD.FullYRes() == g_DepthMD.YRes() );
 
-		/*
-		cv::putText(colorImgMat, 
-					GlobalUtility::DoubleToString(g_ImageMD.FPS()) + " FPS", 
-					cv::Point(10, 450), 
-					cv::FONT_ITALIC, 
-					0.7, 
-					cv::Scalar(255, 255, 255, 0),
-					2,
-					8,
-					false);
-					*/
+			GlobalUtility::CopyDepthRawBufToCvMat16u ( (const XnDepthPixel *)(g_DepthMD.Data()), g_DepthImgMat );
+			GlobalUtility::ConvertDepthCvMat16uToGrayCvMat ( g_DepthImgMat, g_DepthImgShow );
 
-		cv::imshow(IMAGE_WIN_NAME, colorImgMat);
-		cv::imshow(DEPTH_WIN_NAME, depthImgShow);
+			/*
+			cv::putText(colorImgMat, 
+						GlobalUtility::DoubleToString(g_ImageMD.FPS()) + " FPS", 
+						cv::Point(10, 450), 
+						cv::FONT_ITALIC, 
+						0.7, 
+						cv::Scalar(255, 255, 255, 0),
+						2,
+						8,
+						false);
+						*/
 
-		/*printf("Min Depth = %f\n", OpenNIUtility::CalcSmallestDepth(g_DepthMD));
-		printf("Max Depth = %f\n", OpenNIUtility::CalcBiggestDepth(g_DepthMD));
-		printf("Average Depth = %f\n", OpenNIUtility::CalcAverageDepth(g_DepthMD));
-		*/
+			cv::namedWindow ( DEPTH_WIN_NAME, CV_WINDOW_AUTOSIZE );
+			cv::imshow ( DEPTH_WIN_NAME, g_DepthImgShow );
+		}
 
-		ctlWndKey = cvWaitKey(30);
+#endif
+
+		XnFieldOfView fov;
+		g_DepthGen.GetFieldOfView( fov );
+
+		std::cout	<< "HFov = " << fov.fHFOV << std::endl
+					<< "VFov = " << fov.fVFOV << std::endl;
+
+		ctlWndKey = cvWaitKey ( 5 );
+
+		g_HeadTrackingFrameCount++;
+		g_CurrTickCount = GetTickCount();
+		std::cout	<< "FPS = " 
+					<< 1000 / ( ( double )( g_CurrTickCount - g_StartTickCount ) / ( double )( g_HeadTrackingFrameCount ) ) 
+					<< std::endl;
 	}
 
-	g_Context.Release();
+	g_Context.Release ();
 
-	return 0;
+	exit ( EXIT_SUCCESS );
 }
 
- //#include <stdlib.h>
- //#include <iostream>
- //#include <string>
- //#include <XnCppWrapper.h>
- //#include "opencv/cv.h"
- //#include "opencv/highgui.h"
+// --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 
- //using namespace std;
- //using namespace cv;
- //
- //void CheckOpenNIError( XnStatus eResult, string sStatus )
- //{ 
- // if( eResult != XN_STATUS_OK ) 
- // cerr << sStatus << " Error: " << xnGetStatusString( eResult ) << endl;
- //}
- //
- //int main( int argc, char** argv )
- //{
- // XnStatus eResult = XN_STATUS_OK;  
- // // 1. initial val
- // xn::DepthMetaData m_DepthMD;
- // xn::ImageMetaData m_ImageMD;
- // // for opencv Mat
- // Mat  m_depth16u( 480,640,CV_16UC1);
- // Mat  m_rgb8u( 480,640,CV_8UC3);
- // Mat  m_DepthShow( 480,640,CV_8UC1);
- // Mat  m_ImageShow( 480,640,CV_8UC3);
- // cvNamedWindow("depth");
- // cvNamedWindow("image");
- // char key=0;
- //
- // // 2. initial context 
- // xn::Context mContext; 
- // eResult = mContext.Init(); 
- // CheckOpenNIError( eResult, "initialize context" );  
- //
+//#include <stdlib.h>
+//#include <iostream>
+//#include <string>
+//#include <XnCppWrapper.h>
+//#include "opencv/cv.h"
+//#include "opencv/highgui.h"
+
+//using namespace std;
+//using namespace cv;
+//
+//void CheckOpenNIError( XnStatus eResult, string sStatus )
+//{ 
+// if( eResult != XN_STATUS_OK ) 
+// cerr << sStatus << " Error: " << xnGetStatusString( eResult ) << endl;
+//}
+//
+//int main( int argc, char** argv )
+//{
+// XnStatus eResult = XN_STATUS_OK;  
+// // 1. initial val
+// xn::DepthMetaData m_DepthMD;
+// xn::ImageMetaData m_ImageMD;
+// // for opencv Mat
+// Mat  m_depth16u( 480,640,CV_16UC1);
+// Mat  m_rgb8u( 480,640,CV_8UC3);
+// Mat  m_DepthShow( 480,640,CV_8UC1);
+// Mat  m_ImageShow( 480,640,CV_8UC3);
+// cvNamedWindow("depth");
+// cvNamedWindow("image");
+// char key=0;
+//
+// // 2. initial context 
+// xn::Context mContext; 
+// eResult = mContext.Init(); 
+// CheckOpenNIError( eResult, "initialize context" );  
+//
  // // 3. create depth generator  
  // xn::DepthGenerator mDepthGenerator;  
  // eResult = mDepthGenerator.Create( mContext ); 
