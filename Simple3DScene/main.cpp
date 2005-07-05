@@ -102,7 +102,7 @@ float g_BoxMatShininess[]	=	{ 128.0f };
 float g_BoxSizeX			=	11.0f;
 float g_BoxSizeY			=	7.0f;
 float g_BoxSizeZ			=	1.3f;
-float g_BoxFaceThickness	=	0.09f;
+float g_BoxFaceThickness	=	0.1f;
 
 const float g_BoxMetricSizeY	=	80.0f;															// Centimeter
 const float g_BoxMetricSizeZ	=	( g_BoxSizeZ / g_BoxSizeY ) * g_BoxMetricSizeY;
@@ -207,8 +207,8 @@ void SceneInit ( void )
 #else
 	
 	// Initializing Camera Position and Direction
-	g_CameraPos.Set ( 0.0f, 0.0f, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
-	// g_CameraPos.Set ( 0.0f * scaleFactor, ( -g_CameraMetricSizeY ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	// g_CameraPos.Set ( 0.0f, 0.0f, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	g_CameraPos.Set ( 0.0f * scaleFactor, ( -g_CameraMetricSizeY ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
 	
 	Vec3f	camView  ( 0.0f, 0.0f, -1.0f );
 	Vec3f	camAlong ( 1.0f, 0.0f,  0.0f );
@@ -225,7 +225,7 @@ void SceneInit ( void )
 	// Camera Projection Settings
 	glMatrixMode	( GL_PROJECTION );
 	glLoadIdentity	();
-	gluPerspective	( 45.0f, (GLdouble)(glutMainWndWidth) / (GLdouble)(glutMainWndHeight), 0.1f, 30.0f );
+	gluPerspective	( 45.0f, (GLdouble)(glutMainWndWidth) / (GLdouble)(glutMainWndHeight), 0.1f, 40.0f );
 
 #else
 
@@ -249,18 +249,18 @@ void SceneInit ( void )
 	const float y2 = ( yTop - camPosY )		/ camPosZ * zNear;
 
 	char str[50];
-	sprintf ( str, "<%.2f, %.2f, %.2f, %.2f>", x1, x2, y1, y2 );
-	std::cout << "<x1, x2, y1, y2> = " << std::string ( str ) << std::endl;
+	sprintf ( str, "< %.2f, %.2f, %.2f, %.2f >", x1, x2, y1, y2 );
+	std::cout << "< x1, x2, y1, y2 > = " << std::string ( str ) << std::endl;
 
 	// glViewport ( 0, 0, glutMainWndWidth, glutMainWndHeight );
 
 	// Viewport Settings
-	const float f = abs ( (x1 - x2) / (y1 - y2) ); 
+	const float f = abs ( (x1 - x2) / (y1 - y2) );
 	if ( f > (float)(glutMainWndWidth) / (float)(glutMainWndHeight) ) {
 		glViewport ( 0, 0, glutMainWndWidth, (float)(glutMainWndWidth) / f );
 	}
 	else {
-		glViewport ( 0, 0, glutMainWndHeight * f, glutMainWndHeight );
+		glViewport ( 0, 0, (float)(glutMainWndHeight) * f, glutMainWndHeight );
 	}
 
 	// Camera Projection Settings
@@ -331,7 +331,7 @@ void Display ( void )
 				g_CameraPosX + g_CameraDirView.x(), g_CameraPosY + g_CameraDirView.y(), g_CameraPosZ + g_CameraDirView.z(), 
 				g_CameraDirUp.x(), g_CameraDirUp.y(), g_CameraDirUp.z() );
 	*/
-	
+
 	glMultMatrixf ( camRotTmpMat );
 	g_Camera.Update ();
 	
@@ -592,12 +592,12 @@ void Reshape ( int width, int height )
 	const float f = abs ( (x1 - x2) / (y1 - y2) ); 
 
 	if ( f > (float)(width) / (float)(height) ) { glViewport ( 0, 0, width, (float)(width) / f ); }
-	else { glViewport ( 0, 0, height * f, height ); }
+	else { glViewport ( 0, 0, (float)(height) * f, height ); }
 
 	// Camera Projection Settings
 	glMatrixMode	( GL_PROJECTION );
 	glLoadIdentity	();
-	glFrustum ( x1, x2, y1, y2, zNear, camPosZ + 5.0f );
+	glFrustum		( x1, x2, y1, y2, zNear, camPosZ + 5.0f );
 
 #endif
 

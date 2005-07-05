@@ -17,9 +17,9 @@ double CalcBiggestDepth8u(const cv::Mat & srcDepthMat);
 // TODO:
 // double CalcSmallestDepth(const cv::Mat & srcDepthMat);
 
-void CalcMinimumOfDepthHistogram(const cv::Mat & srcDepthMat, int & minIndex, int & minHistValue);
+void CalcMinimumOfDepthHistogram ( const cv::Mat & srcDepthMat, int & minIndex, int & minHistValue );
 
-inline void HSV2RGB(unsigned short H, uchar S, uchar V, uchar & R, uchar & G, uchar & B)
+inline void HSV2RGB ( unsigned short H, uchar S, uchar V, uchar & R, uchar & G, uchar & B )
 {
 	// 
 	// H[0 - 360], S[0 - 255], V[0 - 255]

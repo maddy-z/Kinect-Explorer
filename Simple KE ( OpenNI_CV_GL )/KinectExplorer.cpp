@@ -2,14 +2,14 @@
 //  Includes
 // ==========
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 
 #include <opencv2\opencv.hpp>
 
 #include <XnOS.h>
-#if (XN_PLATFORM == XN_PLATFORM_MACOSX)
+#if ( XN_PLATFORM == XN_PLATFORM_MACOSX )
 	#include <GLUT/glut.h>
 #else
 	#include <gl/glut.h>
@@ -48,7 +48,7 @@ xn::ImageMetaData g_ImageMD;
 //  Forward Declaration
 // ---------------------
 
-int main(int argc, char * argv[])
+int main ( int argc, char * argv[] )
 {
 	// 
 	// Initialize OpenNI Settings
@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
 	nRetVal = g_Context.FindExistingNode(XN_NODE_TYPE_DEPTH, g_DepthGen);
 	if (nRetVal != XN_STATUS_OK)
 	{
-		printf("No depth node exists! Check your XML.\n");
+		printf("No depth node exists! Please Check your XML.\n");
 		return (nRetVal);
 	}
 	
@@ -96,14 +96,14 @@ int main(int argc, char * argv[])
 	nRetVal = g_Context.FindExistingNode(XN_NODE_TYPE_IMAGE, g_ImageGen);
 	if (nRetVal != XN_STATUS_OK)
 	{
-		printf("No image node exists! Check your XML.\n");
+		printf("No image node exists! Please Check your XML.\n");
 		return (nRetVal);
 	}
 
 	// g_DepthGen.GetAlternativeViewPointCap().SetViewPoint( g_ImageGen );
 
-	g_DepthGen.GetMetaData(g_DepthMD);
-	g_ImageGen.GetMetaData(g_ImageMD);
+	g_DepthGen.GetMetaData ( g_DepthMD );
+	g_ImageGen.GetMetaData ( g_ImageMD );
 
 	assert (g_ImageMD.PixelFormat() == XN_PIXEL_FORMAT_RGB24);
 
@@ -126,7 +126,7 @@ int main(int argc, char * argv[])
 	while (ctlWndKey != ESC_KEY_VALUE) 
 	{
 		// 
-		// Try to Get New Frame From Kinect.
+		// Try to Get New Frame From Kinect
 		// 
 	
 		nRetVal = g_Context.WaitAnyUpdateAll();

@@ -41,8 +41,8 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(ConfigurationName)</OutDir>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\3rd Party Lib\include\OpenCV_2.3.1;..\3rd Party Lib\include\OpenCV_2.3.1\opencv2;..\3rd Party Lib\include\OpenNI;D:\Qt_4.8.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\3rd Party Lib\lib\OpenCV_2.3.1;..\3rd Party Lib\lib\OpenNI;D:\Qt_4.8.2\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\3rd Party Lib\include\OpenCV_2.3.1;..\3rd Party Lib\include\OpenCV_2.3.1\opencv2;..\3rd Party Lib\include\OpenNI;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\3rd Party Lib\lib\OpenCV_2.3.1;..\3rd Party Lib\lib\OpenNI;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

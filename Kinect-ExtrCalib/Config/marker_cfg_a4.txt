@@ -1,0 +1,77 @@
+coordframe
+name="0"
+min_points=4
+marker
+id=1
+//-list of corners cw from top left
+vtx=0,21,0
+vtx=21,21,0
+vtx=21,0,0
+vtx=0,0,0
+/marker
+/coordframe
+
+coordframe
+name="1"
+min_points=4
+marker
+id=2
+//-list of corners cw from top left
+vtx=30,21,0
+vtx=51,21,0
+vtx=51,0,0
+vtx=30,0,0
+/marker
+/coordframe
+
+coordframe
+name="2"
+min_points=4
+marker
+id=3
+//-list of corners cw from top left
+vtx=60,21,0
+vtx=81,21,0
+vtx=81,0,0
+vtx=60,0,0
+/marker
+/coordframe
+
+coordframe
+name="3"
+min_points=4
+marker
+id=8
+//-list of corners cw from top left
+vtx=0,51,0
+vtx=21,51,0
+vtx=21,30,0
+vtx=0,30,0
+/marker
+/coordframe
+
+coordframe
+name="4"
+min_points=4
+marker
+id=9
+//-list of corners cw from top left
+vtx=30,51,0
+vtx=51,51,0
+vtx=51,30,0
+vtx=30,30,0
+/marker
+/coordframe
+
+coordframe
+name="5"
+min_points=4
+marker
+id=10
+//-list of corners cw from top left
+vtx=60,51,0
+vtx=81,51,0
+vtx=81,30,0
+vtx=60,30,0
+/marker
+/coordframe

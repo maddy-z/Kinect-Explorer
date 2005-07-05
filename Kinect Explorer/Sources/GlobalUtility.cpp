@@ -464,6 +464,172 @@ bool ConvertDepthCvMat8uToGrayQImage(const cv::Mat & srcDepthMat, QImage & destI
 	return true;
 }
 
+bool ConvertDepthCvMat16uToYellowCvMat(const cv::Mat & srcDepthMat, cv::Mat & destMat)
+{
+	if ( srcDepthMat.empty() || destMat.empty() ) {
+		return false;
+	}
+
+	assert ( srcDepthMat.size() == destMat.size() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	const int nXRes = srcDepthMat.size().width;
+	const int nYRes = srcDepthMat.size().height;
+	const int srcRowStep = srcDepthMat.step;
+
+	const uchar * srcRowPtr = NULL;
+	const unsigned short * srcDataPtr = NULL;
+
+	float depthHist[OPENNI_MAX_DEPTH];
+	memset(depthHist, 0, OPENNI_MAX_DEPTH * sizeof(float));
+
+	unsigned int pointsNumber = 0;
+	srcRowPtr = srcDepthMat.data;
+
+	for (int y = 0; y < nYRes; ++y, srcRowPtr += srcRowStep) 
+	{
+		srcDataPtr = (const unsigned short *)(srcRowPtr);
+	
+		for (int x = 0; x < nXRes; ++x, ++srcDataPtr) 
+		{
+			unsigned short tmp = *srcDataPtr;
+			if ( tmp ) {
+				++depthHist[tmp];
+				++pointsNumber;
+			}
+		}
+	}
+	for (int i = 1; i < OPENNI_MAX_DEPTH; ++i) {
+		depthHist[i] += depthHist[i-1];
+	}
+	if (pointsNumber > 0)
+	{
+		for (int i = 1; i < OPENNI_MAX_DEPTH; ++i) {
+			depthHist[i] = (unsigned int)(256 * (1.0f - depthHist[i] / pointsNumber));
+		}
+	}
+	
+	srcRowPtr = srcDepthMat.data;
+	
+	for (int y = 0; y < nYRes; ++y, srcRowPtr += srcRowStep) 
+	{
+		srcDataPtr = (const unsigned short *)(srcRowPtr);
+		uchar * imageptr = destMat.ptr(y);
+	
+		for (int x = 0; x < nXRes; ++x, ++srcDataPtr, imageptr += destMat.channels()) 
+		{
+			unsigned short tmp = (*srcDataPtr);
+			if ( tmp )
+			{
+				imageptr[0] = 0;
+				imageptr[1] = depthHist[tmp];
+				imageptr[2] = depthHist[tmp];
+				// imageptr[3] = 0xff;
+			}
+			else 
+			{
+				// imageptr[3] = 0;
+				imageptr[2] = imageptr[1] = imageptr[0] = 0;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ConvertDepthCvMat16uToGrayCvMat(const cv::Mat & srcDepthMat, cv::Mat & destMat)
+{
+	if ( srcDepthMat.empty() || destMat.empty() ) 
+	{
+		return false;
+	}
+
+	assert ( srcDepthMat.size() == destMat.size() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	double maxDepth = OpenCvUtility::CalcBiggestDepth ( srcDepthMat );
+
+	const int nXRes = srcDepthMat.cols;
+	const int nYRes = srcDepthMat.rows;
+	const int srcRowStep = srcDepthMat.step;
+
+	const uchar * srcRowPtr = NULL;
+	const unsigned short * srcDataPtr = NULL;
+
+	srcRowPtr = srcDepthMat.data;
+
+	for (int y = 0; y < nYRes; ++y, srcRowPtr += srcRowStep) 
+	{
+		srcDataPtr = (const unsigned short *)(srcRowPtr);
+		uchar * imagePtr = destMat.ptr(y);
+
+		for ( int x = 0; x < nXRes; ++x, ++srcDataPtr, imagePtr += destMat.channels() ) 
+		{
+			if (*srcDataPtr) {
+				uchar value = 255.f * (1.f - (double)(*srcDataPtr) / maxDepth); 
+		
+				imagePtr[2] = imagePtr[1] = imagePtr[0] = value;
+				// imagePtr[3] = 0xff;
+			}
+			else {
+				imagePtr[2] = imagePtr[1] = imagePtr[0] = 0;
+				// imagePtr[3] = 0xff;
+			}
+		}
+	}
+	
+	return true;
+}
+
+bool ConvertDepthCvMat16uToColorfulCvMat(const cv::Mat & srcDepthMat, cv::Mat & destMat, XnDepthPixel maxDeviceDepth)
+{
+	if ( srcDepthMat.empty() || destMat.empty() ) 
+	{
+		return false;
+	}
+
+	assert ( srcDepthMat.size() == destMat.size() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	int srcRow = srcDepthMat.rows;
+	int srcCol = srcDepthMat.cols;
+	int srcRowStep = srcDepthMat.step;
+
+	const uchar * pSrcRow = NULL;
+	const unsigned short * pSrcData = NULL;
+
+	// double minDepth = OpenCvUtility::CalcSmallestDepth(srcDepthMat);
+	double maxDepthW = OpenCvUtility::CalcBiggestDepth(srcDepthMat);
+
+	// qDebug("Min Depth = %f", minDepth);
+	// qDebug("Max Depth = %f", maxDepthW);
+
+	unsigned short h, s = 255, v = 255;
+	pSrcRow = srcDepthMat.data;
+
+	for (int i = 0; i < srcRow; ++i, pSrcRow += srcRowStep) 
+	{
+		pSrcData = (const unsigned short *)(pSrcRow);
+		uchar * imagePtr = destMat.ptr(i);
+
+		for ( int j = 0; j < srcCol; ++j, ++pSrcData, imagePtr += destMat.channels() ) 
+		{
+			if (*pSrcData) 
+			{
+				h = (float)(*pSrcData) * 360.0f / (maxDepthW + 0.3f);
+				OpenCvUtility::HSV2RGB(h, s, v, imagePtr[0], imagePtr[1], imagePtr[2]);
+			}
+			else 
+			{
+				imagePtr[2] = imagePtr[1] = imagePtr[0] = 0;
+				// imagePtr[3] = 0xff;
+			}
+		}
+	}
+
+	return true;
+}
+
 bool CopyCvMat8uToQImage(const cv::Mat & srcMat, QImage & destImg)
 {
 	if (srcMat.empty() || destImg.isNull()) {
