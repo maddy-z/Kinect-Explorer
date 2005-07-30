@@ -73,6 +73,8 @@ void Camera::Reset ()
 
 void Camera::Update () 
 {
+	std::cout << m_Position << std::endl;
+
 	GLfloat x = m_Along.Dot3 ( m_Position );
 	GLfloat y = m_Up.Dot3 ( m_Position );
 	GLfloat z = m_Forward.Dot3 ( m_Position );

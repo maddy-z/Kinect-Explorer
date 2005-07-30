@@ -37,8 +37,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\3rd Party Lib\include\OpenCV_2.3.1\opencv2;..\3rd Party Lib\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Qt\4.8.0\lib;..\3rd Party Lib\lib\OpenGL\Glut;..\3rd Party Lib\lib\OpenGL\Glui;..\3rd Party Lib\lib\OpenNI;..\3rd Party Lib\lib\OpenCV_2.3.1;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\3rd Party Lib\include\OpenGL;..\3rd Party Lib\include\AntTweakBar;..\3rd Party Lib\include\OpenCV_2.3.1\opencv2;..\3rd Party Lib\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\3rd Party Lib\lib\AntTweakBar;..\3rd Party Lib\lib\OpenGL\Glut;..\3rd Party Lib\lib\OpenGL\Glui;..\3rd Party Lib\lib\OpenNI;..\3rd Party Lib\lib\OpenCV_2.3.1;C:\Qt\4.8.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -70,7 +70,10 @@
     <ClCompile Include="..\Kinect Explorer\Sources\OpenCvUtility.cpp" />
     <ClCompile Include="..\Kinect Explorer\Sources\OpenNiUtility.cpp" />
     <ClCompile Include="..\Kinect Explorer\Sources\SimpleHeadTracking.cpp" />
+    <ClCompile Include="..\Simple3DScene\Camera.cpp" />
+    <ClCompile Include="..\Simple3DScene\Matrix.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ProjScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Kinect Explorer\Sources\GlobalUtility.h" />
@@ -78,6 +81,13 @@
     <ClInclude Include="..\Kinect Explorer\Sources\OpenCvUtility.h" />
     <ClInclude Include="..\Kinect Explorer\Sources\OpenNiUtility.h" />
     <ClInclude Include="..\Kinect Explorer\Sources\SimpleHeadTracking.h" />
+    <ClInclude Include="..\Simple3DScene\Camera.h" />
+    <ClInclude Include="..\Simple3DScene\Matrix.h" />
+    <ClInclude Include="..\Simple3DScene\Pos.h" />
+    <ClInclude Include="..\Simple3DScene\Quaternion.h" />
+    <ClInclude Include="..\Simple3DScene\Vec.h" />
+    <ClInclude Include="AvgHeadCoor.h" />
+    <ClInclude Include="ProjScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

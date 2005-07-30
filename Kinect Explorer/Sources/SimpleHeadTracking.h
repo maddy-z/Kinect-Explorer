@@ -20,6 +20,9 @@ class SimpleHeadTracking
 public:
 	
 	static bool SimpleDepthHandlingFunc (	QImage & destImgBuff, const xn::DepthGenerator & depthGen );
+	static bool SimpleDepthHandlingFunc2(	QImage & destImgBuff, const xn::DepthGenerator & depthGen, XnPoint3D & headImgCoor );
+	static bool SimpleDepthHandlingFunc2(	cv::Mat & destImgBuff, const xn::DepthGenerator & depthGen, XnPoint3D & headImgCoor );
+
 	static bool FindHeadCoordinate		(	const XnDepthPixel * srcDepthData, 
 											int nXRes, int nYRes, 
 											int & rowIndex, int & columnIndex, 

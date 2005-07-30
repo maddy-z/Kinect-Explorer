@@ -186,7 +186,7 @@ public:
 	virtual std::string toString()
 	{
 		char str[DEFAULT_CHAR_ARRAY_NUMBER];
-		sprintf(str, "Vec3f < %.2f, %.2f >", data[0], data[1]);
+		sprintf_s(str, "Vec3f < %.2f, %.2f >", data[0], data[1]);
 		
 		return string(str);
 	}
@@ -450,7 +450,7 @@ public:
 	virtual std::string toString()
 	{
 		char str[DEFAULT_CHAR_ARRAY_NUMBER];
-		sprintf(str, "Vec3f < %.2f, %.2f, %.2f >", data[0], data[1], data[2]);
+		sprintf_s(str, "Vec3f < %.2f, %.2f, %.2f >", data[0], data[1], data[2]);
 		
 		return string(str);
 	}
@@ -724,7 +724,7 @@ public:
 	virtual std::string toString()
 	{
 		char str[DEFAULT_CHAR_ARRAY_NUMBER];
-		sprintf(str, "Vec3f < %.2f, %.2f, %.2f, %.2f >", data[0], data[1], data[2], data[3]);
+		sprintf_s(str, "Vec3f < %.2f, %.2f, %.2f, %.2f >", data[0], data[1], data[2], data[3]);
 		
 		return string(str);
 	}

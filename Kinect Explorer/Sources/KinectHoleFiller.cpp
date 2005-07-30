@@ -346,10 +346,10 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 	int depthWidth = srcDepthMat.size().width, depthHeight = srcDepthMat.size().height;
 	int srcRowStep = srcDepthMat.step, destRowStep = destDepthMat.step;
 
-	const uchar * srcRowPtr			= NULL;
-	const XnDepthPixel * srcDataPtr = NULL;
-	uchar * destRowPtr				= NULL;
-	XnDepthPixel * destDataPtr		= NULL;
+	const uchar * srcRowPtr				= NULL;
+	const XnDepthPixel * srcDataPtr		= NULL;
+	uchar * destRowPtr					= NULL;
+	XnDepthPixel * destDataPtr			= NULL;
 
 	// 
 	// Create Distance Map
@@ -404,7 +404,7 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 				case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr - 1);								break;
 				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) - destRowStep);		break;
 				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) - destRowStep);			break;
-				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) - destRowStep);		break;		
+				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) - destRowStep);		break;					
 				}
 			}
 		}
@@ -424,7 +424,7 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 
 		for ( int x = depthWidth - 2; x >= 1; --x, --distDataPtr, --destDataPtr ) 
 		{
-			if ( *distDataPtr > 0 )
+			if ( (*distDataPtr) > 0 )
 			{
 				adj[0] = *(distDataPtr + 1)				 + 1;
 				adj[1] = *(distDataPtr + depthWidth + 1) + 2;

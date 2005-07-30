@@ -30,6 +30,15 @@
     <ClCompile Include="..\Kinect Explorer\Sources\SimpleHeadTracking.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\Simple3DScene\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Simple3DScene\Matrix.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjScene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="..\Kinect Explorer\Sources\GlobalUtility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -48,6 +57,27 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\Kinect Explorer\Sources\SimpleHeadTracking.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple3DScene\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple3DScene\Matrix.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple3DScene\Pos.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple3DScene\Quaternion.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple3DScene\Vec.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjScene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AvgHeadCoor.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

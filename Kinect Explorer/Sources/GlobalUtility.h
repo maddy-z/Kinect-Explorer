@@ -54,6 +54,7 @@ namespace GlobalUtility
 
 	bool ConvertDepthCvMat16uToYellowQImage ( const cv::Mat & srcDepthMat, QImage & destImg );
 	bool ConvertDepthCvMat16uToGrayQImage ( const cv::Mat & srcDepthMat, QImage & destImg );
+	bool ConvertDepthCvMat16uToGrayQImage ( const cv::Mat & srcDepthMat, cv::Mat & destImg );
 	bool ConvertDepthCvMat16uToColorfulQImage ( const cv::Mat & srcDepthMat, QImage & destImg, XnDepthPixel maxDeviceDepth );
 	
 	bool ConvertDepthCvMat8uToYellowQImage ( const cv::Mat & srcDepthMat, QImage & destImg );

@@ -21,6 +21,7 @@ public:
 	Camera ( const Vec3f & camPos, const Vec3f & camView, const Vec3f & camAlong, CAM_TYPE ct = LAND_CAM );
 	virtual ~Camera ();
 
+	void SetCameraPos ( const Vec3f & camPos ) { m_Position = camPos; }
 	void SetCameraArg ( const Vec3f & camPos, const Vec3f & camView, const Vec3f & camAlong );
 	void SetCameraType ( CAM_TYPE ct );
 	void SetMotionSpeed ( GLfloat speed );

@@ -18,9 +18,9 @@ namespace GlobalUtility
 
 {
 
-bool CopyCvMat16uToDepthRawBuf(const cv::Mat & srcDepthMat, XnDepthPixel * destDepthData)
+bool CopyCvMat16uToDepthRawBuf ( const cv::Mat & srcDepthMat, XnDepthPixel * destDepthData )
 {
-	if (srcDepthMat.empty() || destDepthData == NULL) {
+	if ( srcDepthMat.empty() || destDepthData == NULL ) {
 		return false;
 	}
 
@@ -46,13 +46,13 @@ bool CopyCvMat16uToDepthRawBuf(const cv::Mat & srcDepthMat, XnDepthPixel * destD
 
 	return true;
 }
-bool CopyDepthRawBufToCvMat16u(const XnDepthPixel * srcDepthData, cv::Mat & destDepthMat)
+bool CopyDepthRawBufToCvMat16u ( const XnDepthPixel * srcDepthData, cv::Mat & destDepthMat )
 {
 	if (srcDepthData == NULL || destDepthMat.empty()) {
 		return false;
 	}
 
-	assert (destDepthMat.type() == CV_16UC1);
+	assert ( destDepthMat.type() == CV_16UC1 );
 	
 	const uchar * destRowPtr = NULL;
 	XnDepthPixel * destDataPtr = NULL;
@@ -343,6 +343,52 @@ bool ConvertDepthCvMat16uToGrayQImage(const cv::Mat & srcDepthMat, QImage & dest
 			else {
 				imagePtr[2] = imagePtr[1] = imagePtr[0] = 0;
 				imagePtr[3] = 0xff;
+			}
+		}
+	}
+	
+	return true;
+}
+bool ConvertDepthCvMat16uToGrayQImage(const cv::Mat & srcDepthMat, cv::Mat & destImgMat)
+{
+	if ( srcDepthMat.empty() || destImgMat.empty() ) {
+		return false;
+	}
+
+	assert (srcDepthMat.rows == destImgMat.rows && srcDepthMat.cols == destImgMat.cols);
+	assert (srcDepthMat.type() == CV_16UC1 && destImgMat.type() == CV_8UC1);
+
+	double maxDepth = OpenCvUtility::CalcBiggestDepth(srcDepthMat);
+
+	const int nXRes = srcDepthMat.cols;
+	const int nYRes = srcDepthMat.rows;
+	const int destChannel = destImgMat.channels();
+	const int srcRowStep = srcDepthMat.step;
+	const int destRowStep = destImgMat.step;
+
+	const uchar * srcRowPtr = NULL;
+	const unsigned short * srcDataPtr = NULL;
+	uchar * destRowPtr = NULL;
+	uchar * destDataPtr = NULL;
+
+	srcRowPtr = srcDepthMat.data;
+	destRowPtr = destImgMat.data;
+
+	for (int y = 0; y < nYRes; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep) 
+	{
+		srcDataPtr = (const unsigned short *)(srcRowPtr);
+		destDataPtr = destRowPtr;
+
+		for (int x = 0; x < nXRes; ++x, ++srcDataPtr, destDataPtr += destChannel) 
+		{
+			if (*srcDataPtr) {
+				uchar value = 255.f * (1.f - (double)(*srcDataPtr) / maxDepth); 
+				destDataPtr[0] = value;
+				// destDataPtr[2] = destDataPtr[1] = destDataPtr[0] = value;
+			}
+			else {
+				destDataPtr[0] = 0;
+				// destDataPtr[2] = destDataPtr[1] = destDataPtr[0] = 0;
 			}
 		}
 	}
@@ -737,6 +783,9 @@ bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat
 
 			if (*srcDataPtr == 0 && isThresholdUnknownDepth) {
 				*destDataPtr = newValue;
+			}
+			else if (*srcDataPtr == 0 && !isThresholdUnknownDepth) {
+				*destDataPtr = 0;
 			}
 		}
 	}

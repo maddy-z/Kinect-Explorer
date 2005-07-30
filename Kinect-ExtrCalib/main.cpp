@@ -26,6 +26,7 @@
 
 #define		KINECT_INTR_FILE			"Config\\intr.txt"
 #define		KINECT_DIST_FILE			"Config\\dist.txt"
+#define		KINECT_EXTR_FILE			"Config\\extr.txt"
 
 #define		IMAGE_WIN_NAME				"Color Viewer"
 #define		DEPTH_WIN_NAME				"Depth Viewer"
@@ -202,6 +203,8 @@ int main ( int argc, char ** argv )
 						// << extrCalibrator.ComputeReprojectionErr ( artagHelper.m_MarkerCornerPosCam2d, artagHelper.m_MarkerCornerPos3d, 24 ) << std::endl
 						<< "Valid Marker Number = " << artagHelper.GetValidMarkerNumber() << std::endl
 						<< std::endl;
+
+			extrCalibrator.SaveMatrix ( ExtrCalibrator::EXTR, KINECT_EXTR_FILE );
 		}
 		if ( ctlWndKey == 's' || ctlWndKey == 'S' )
 		{
