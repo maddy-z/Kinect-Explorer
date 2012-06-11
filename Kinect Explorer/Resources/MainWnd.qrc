@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/MainWnd">
+        <file>icons/pause24.ico</file>
+        <file>icons/start24.ico</file>
+        <file>icons/stop24.ico</file>
+    </qresource>
+</RCC>
