@@ -13,6 +13,7 @@ double CalcBiggestDepth(const cv::Mat & srcDepthMat);
 double CalcSmallestDepth(const cv::Mat & srcDepthMat);
 
 double CalcBiggestDepth8u(const cv::Mat & srcDepthMat);
+
 // TODO:
 // double CalcSmallestDepth(const cv::Mat & srcDepthMat);
 

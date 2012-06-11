@@ -38,7 +38,6 @@ double CalcAverageDepth(const cv::Mat & srcDepthMat)
 
 	return (totalDepthValue) / (double)(totalDepthPixelCount);
 }
-
 double CalcSmallestDepth(const cv::Mat & srcDepthMat)
 {
 	if (srcDepthMat.empty()) {
@@ -65,7 +64,6 @@ double CalcSmallestDepth(const cv::Mat & srcDepthMat)
 
 	return value;
 }
-
 double CalcBiggestDepth(const cv::Mat & srcDepthMat)
 {
 	if (srcDepthMat.empty()) {
@@ -230,4 +228,6 @@ void CalcMinimumOfDepthHistogram(const cv::Mat & srcDepthMat, int & minIndex, in
 	return;
 }
 
-}						// End of Namespace ( OpenCvUtility )
+}						
+
+// End of Namespace ( OpenCvUtility )

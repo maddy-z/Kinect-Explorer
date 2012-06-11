@@ -22,13 +22,6 @@ public:
 	static int thresholdValue_2;
 
 private:
-	
-	// static bool NearestNeighborFiltering(const cv::Mat & srcDepthMat, cv::Mat & destDepthMat);
-
-	// static bool ConvertDepth2ColorfulQImage(const cv::Mat & srcDepthMat, QImage & destImg, /*unsigned int imgWidth, unsigned int imgHeight,*/ XnDepthPixel maxDeviceDepth);
-	
-	// static bool CopyDepthRawData2CvMat(const XnDepthPixel * srcDepthData, cv::Mat & destDepthMat);
-	// static bool CopyColorRawData2CvMat(const XnRGB24Pixel * srcColorData, cv::Mat & destColorMat);
 
 };
 

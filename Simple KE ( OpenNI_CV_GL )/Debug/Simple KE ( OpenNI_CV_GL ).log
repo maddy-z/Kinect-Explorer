@@ -1,4 +1,4 @@
-﻿Build started 2006-6-11 22:02:36.
+﻿Build started 2012-6-11 23:26:30.
 Environment at start of build:
 MSBuildExtensionsPath32 = C:\Program Files\MSBuild
 MSBuildExtensionsPath = C:\Program Files\MSBuild
@@ -68,124 +68,117 @@ windir = C:\WINDOWS
 wxWidgets = D:\PCL_dependencies\wxWidgets-2.9.2
 XN_NITE_INSTALL_PATH = C:\Program Files\PrimeSense\NITE\
 
-22:02:36.187     1>Project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" on node 3 (clean target(s)).
-22:02:36.187     1>Building with tools version "4.0".
-22:02:36.187     1>Target "_CheckForInvalidConfigurationAndPlatform: (TargetId:2)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (entry point):
+23:26:30.359     1>Project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" on node 3 (clean target(s)).
+23:26:30.359     1>Building with tools version "4.0".
+23:26:30.359     1>Target "_CheckForInvalidConfigurationAndPlatform: (TargetId:16)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (entry point):
                    Task "Error" skipped, due to false condition; ( '$(_InvalidConfigurationError)' == 'true' ) was evaluated as ( '' == 'true' ).
                    Task "Warning" skipped, due to false condition; ( '$(_InvalidConfigurationWarning)' == 'true' ) was evaluated as ( '' == 'true' ).
-                   Using "Message" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "Message" (TaskId:2)
-                     Configuration=Debug (TaskId:2)
-                   Done executing task "Message". (TaskId:2)
-                   Task "Message" (TaskId:3)
-                     Platform=Win32 (TaskId:3)
-                   Done executing task "Message". (TaskId:3)
+                   Task "Message" (TaskId:16)
+                     Configuration=Debug (TaskId:16)
+                   Done executing task "Message". (TaskId:16)
+                   Task "Message" (TaskId:17)
+                     Platform=Win32 (TaskId:17)
+                   Done executing task "Message". (TaskId:17)
                    Task "Error" skipped, due to false condition; ('$(OutDir)' != '' and !HasTrailingSlash('$(OutDir)')) was evaluated as ('Debug\' != '' and !HasTrailingSlash('Debug\')).
                    Task "Error" skipped, due to false condition; ('$(BaseIntermediateOutputPath)' != '' and !HasTrailingSlash('$(BaseIntermediateOutputPath)')) was evaluated as ('obj\' != '' and !HasTrailingSlash('obj\')).
                    Task "Error" skipped, due to false condition; ('$(IntermediateOutputPath)' != '' and !HasTrailingSlash('$(IntermediateOutputPath)')) was evaluated as ('Debug\' != '' and !HasTrailingSlash('Debug\')).
-22:02:36.187     1>Done building target "_CheckForInvalidConfigurationAndPlatform" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:2)
-22:02:36.187     1>Target "_PrepareForClean: (TargetId:3)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.BuildSteps.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+23:26:30.359     1>Done building target "_CheckForInvalidConfigurationAndPlatform" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:16)
+23:26:30.359     1>Target "_PrepareForClean: (TargetId:17)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.BuildSteps.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
                    Task "Delete" skipped, due to false condition; (Exists($(LastBuildState))) was evaluated as (Exists(Debug\Simple KE ( OpenNI_CV_GL ).lastbuildstate)).
-22:02:36.187     1>Done building target "_PrepareForClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:3)
-22:02:36.187     1>Target "BeforeClean: (TargetId:4)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
-22:02:36.187     1>Done building target "BeforeClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:4)
+23:26:30.359     1>Done building target "_PrepareForClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:17)
+23:26:30.359     1>Target "BeforeClean: (TargetId:18)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+23:26:30.359     1>Done building target "BeforeClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:18)
                    Target "UnmanagedUnregistration" skipped, due to false condition; ((('$(_AssemblyTimestampBeforeCompile)' != '$(_AssemblyTimestampAfterCompile)' or '$(RegisterForComInterop)' != 'true' or '$(OutputType)' != 'library') or
                                        ('$(_AssemblyTimestampBeforeCompile)' == '')) and
                                       Exists('@(_UnmanagedRegistrationCache)')) was evaluated as ((('' != '' or '' != 'true' or 'exe' != 'library') or
                                        ('' == '')) and
                                       Exists('obj\Simple KE ( OpenNI_CV_GL ).vcxproj.UnmanagedRegistration.cache')).
-22:02:36.187     1>Target "CoreClean: (TargetId:5)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
-                   Using "Delete" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "Delete" (TaskId:4)
-                   Done executing task "Delete". (TaskId:4)
-                   Using "ReadLinesFromFile" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "ReadLinesFromFile" (TaskId:5)
-                   Done executing task "ReadLinesFromFile". (TaskId:5)
-                   Using "FindUnderPath" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "FindUnderPath" (TaskId:6)
-                     Comparison path is "Debug\". (TaskId:6)
-                   Done executing task "FindUnderPath". (TaskId:6)
-                   Task "FindUnderPath" (TaskId:7)
-                     Comparison path is "Debug\". (TaskId:7)
-                   Done executing task "FindUnderPath". (TaskId:7)
-                   Task "Delete" (TaskId:8)
-                   Done executing task "Delete". (TaskId:8)
-                   Using "RemoveDuplicates" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "RemoveDuplicates" (TaskId:9)
-                   Done executing task "RemoveDuplicates". (TaskId:9)
-                   Using "MakeDir" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "MakeDir" (TaskId:10)
-                   Done executing task "MakeDir". (TaskId:10)
-                   Using "WriteLinesToFile" task from assembly "Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "WriteLinesToFile" (TaskId:11)
-                   Done executing task "WriteLinesToFile". (TaskId:11)
-22:02:36.187     1>Done building target "CoreClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:5)
+23:26:30.359     1>Target "CoreClean: (TargetId:19)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+                   Task "Delete" (TaskId:18)
+                   Done executing task "Delete". (TaskId:18)
+                   Task "ReadLinesFromFile" (TaskId:19)
+                   Done executing task "ReadLinesFromFile". (TaskId:19)
+                   Task "FindUnderPath" (TaskId:20)
+                     Comparison path is "Debug\". (TaskId:20)
+                   Done executing task "FindUnderPath". (TaskId:20)
+                   Task "FindUnderPath" (TaskId:21)
+                     Comparison path is "Debug\". (TaskId:21)
+                   Done executing task "FindUnderPath". (TaskId:21)
+                   Task "Delete" (TaskId:22)
+                   Done executing task "Delete". (TaskId:22)
+                   Task "RemoveDuplicates" (TaskId:23)
+                   Done executing task "RemoveDuplicates". (TaskId:23)
+                   Task "MakeDir" (TaskId:24)
+                   Done executing task "MakeDir". (TaskId:24)
+                   Task "WriteLinesToFile" (TaskId:25)
+                   Done executing task "WriteLinesToFile". (TaskId:25)
+23:26:30.359     1>Done building target "CoreClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:19)
                    Target "AssignProjectConfiguration" skipped, due to false condition; ('@(ProjectReference)'!='') was evaluated as (''!='').
-22:02:36.187     1>Target "_SplitProjectReferencesByFileExistence: (TargetId:6)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CleanReferencedProjects" depends on it):
+23:26:30.359     1>Target "_SplitProjectReferencesByFileExistence: (TargetId:20)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CleanReferencedProjects" depends on it):
                    Task "ResolveNonMSBuildProjectOutput" skipped, due to false condition; ('$(BuildingInsideVisualStudio)'=='true' and '@(ProjectReferenceWithConfiguration)'!='') was evaluated as ('true'=='true' and ''!='').
-22:02:36.187     1>Done building target "_SplitProjectReferencesByFileExistence" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:6)
-22:02:36.187     1>Target "CleanReferencedProjects: (TargetId:7)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+23:26:30.359     1>Done building target "_SplitProjectReferencesByFileExistence" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:20)
+23:26:30.359     1>Target "CleanReferencedProjects: (TargetId:21)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
                    Task "MSBuild" skipped, due to false condition; ('$(BuildingInsideVisualStudio)' != 'true' and '$(BuildProjectReferences)' == 'true' and '@(_MSBuildProjectReferenceExistent)' != '') was evaluated as ('true' != 'true' and 'true' == 'true' and '' != '').
-22:02:36.187     1>Done building target "CleanReferencedProjects" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:7)
-22:02:36.187     1>Target "CleanPublishFolder: (TargetId:8)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+23:26:30.359     1>Done building target "CleanReferencedProjects" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:21)
+23:26:30.359     1>Target "CleanPublishFolder: (TargetId:22)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
                    Task "RemoveDir" skipped, due to false condition; ('$(PublishDir)'=='$(OutputPath)app.publish\' and Exists('$(PublishDir)')) was evaluated as ('D:\Fangmai Zheng\Kinect-Explorer\Debug\app.publish\'=='D:\Fangmai Zheng\Kinect-Explorer\Debug\app.publish\' and Exists('D:\Fangmai Zheng\Kinect-Explorer\Debug\app.publish\')).
-22:02:36.187     1>Done building target "CleanPublishFolder" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:8)
-22:02:36.187     1>Target "AfterClean: (TargetId:9)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
-22:02:36.187     1>Done building target "AfterClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:9)
+23:26:30.359     1>Done building target "CleanPublishFolder" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:22)
+23:26:30.359     1>Target "AfterClean: (TargetId:23)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+23:26:30.359     1>Done building target "AfterClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:23)
                    Target "EntityClean" skipped, due to false condition; ('@(EntityDeploy)' != '') was evaluated as ('' != '').
-22:02:36.187     1>Target "BeforeCppClean: (TargetId:10)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
-22:02:36.187     1>Done building target "BeforeCppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:10)
-22:02:36.187     1>Target "CoreCppClean: (TargetId:11)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
-                   Task "MakeDir" (TaskId:12)
-                   Done executing task "MakeDir". (TaskId:12)
+23:26:30.359     1>Target "BeforeCppClean: (TargetId:24)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
+23:26:30.359     1>Done building target "BeforeCppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:24)
+23:26:30.359     1>Target "CoreCppClean: (TargetId:25)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
+                   Task "MakeDir" (TaskId:26)
+                   Done executing task "MakeDir". (TaskId:26)
                    Using "CppClean" task from assembly "Microsoft.Build.CppTasks.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
-                   Task "CppClean" (TaskId:13)
-                   Done executing task "CppClean". (TaskId:13)
-                   Task "WriteLinesToFile" (TaskId:14)
-                   Done executing task "WriteLinesToFile". (TaskId:14)
-22:02:36.187     1>Done building target "CoreCppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:11)
-22:02:36.187     1>Target "AfterCppClean: (TargetId:12)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
-22:02:36.187     1>Done building target "AfterCppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:12)
-22:02:36.187     1>Target "PGInstrumentedClean: (TargetId:13)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
-                   Task "Delete" (TaskId:15)
-                   Done executing task "Delete". (TaskId:15)
-22:02:36.187     1>Done building target "PGInstrumentedClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:13)
-22:02:36.187     1>Target "CppClean: (TargetId:14)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
-22:02:36.187     1>Done building target "CppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:14)
-22:02:36.187     1>Target "Clean: (TargetId:15)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (entry point):
-22:02:36.187     1>Done building target "Clean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:15)
-22:02:36.187     1>Done Building Project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (clean target(s)).
+                   Task "CppClean" (TaskId:27)
+                   Done executing task "CppClean". (TaskId:27)
+                   Task "WriteLinesToFile" (TaskId:28)
+                   Done executing task "WriteLinesToFile". (TaskId:28)
+23:26:30.375     1>Done building target "CoreCppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:25)
+23:26:30.375     1>Target "AfterCppClean: (TargetId:26)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
+23:26:30.375     1>Done building target "AfterCppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:26)
+23:26:30.375     1>Target "PGInstrumentedClean: (TargetId:27)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "CppClean" depends on it):
+                   Task "Delete" (TaskId:29)
+                   Done executing task "Delete". (TaskId:29)
+23:26:30.375     1>Done building target "PGInstrumentedClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:27)
+23:26:30.375     1>Target "CppClean: (TargetId:28)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (target "Clean" depends on it):
+23:26:30.375     1>Done building target "CppClean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:28)
+23:26:30.375     1>Target "Clean: (TargetId:29)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (entry point):
+23:26:30.375     1>Done building target "Clean" in project "Simple KE ( OpenNI_CV_GL ).vcxproj".: (TargetId:29)
+23:26:30.375     1>Done Building Project "D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj" (clean target(s)).
 
 Project Performance Summary:
-        0 ms  D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj   1 calls
-                  0 ms  clean                                      1 calls
+       16 ms  D:\Fangmai Zheng\Kinect-Explorer\Simple KE ( OpenNI_CV_GL )\Simple KE ( OpenNI_CV_GL ).vcxproj   1 calls
+                 16 ms  clean                                      1 calls
 
 Target Performance Summary:
         0 ms  BeforeClean                                1 calls
         0 ms  PGInstrumentedClean                        1 calls
         0 ms  _CheckForInvalidConfigurationAndPlatform   1 calls
-        0 ms  BeforeCppClean                             1 calls
         0 ms  CleanPublishFolder                         1 calls
         0 ms  CleanReferencedProjects                    1 calls
-        0 ms  CoreCppClean                               1 calls
+        0 ms  BeforeCppClean                             1 calls
+        0 ms  AfterCppClean                              1 calls
         0 ms  AfterClean                                 1 calls
         0 ms  _SplitProjectReferencesByFileExistence     1 calls
         0 ms  Clean                                      1 calls
-        0 ms  CoreClean                                  1 calls
-        0 ms  AfterCppClean                              1 calls
-        0 ms  CppClean                                   1 calls
         0 ms  _PrepareForClean                           1 calls
+        0 ms  CppClean                                   1 calls
+        0 ms  CoreClean                                  1 calls
+       16 ms  CoreCppClean                               1 calls
 
 Task Performance Summary:
-        0 ms  Delete                                     3 calls
         0 ms  ReadLinesFromFile                          1 calls
-        0 ms  CppClean                                   1 calls
+        0 ms  Delete                                     3 calls
         0 ms  WriteLinesToFile                           2 calls
-        0 ms  FindUnderPath                              2 calls
-        0 ms  Message                                    2 calls
         0 ms  MakeDir                                    2 calls
+        0 ms  Message                                    2 calls
+        0 ms  FindUnderPath                              2 calls
         0 ms  RemoveDuplicates                           1 calls
+       16 ms  CppClean                                   1 calls
 
 Build succeeded.
 
-Time Elapsed 00:00:00.01
+Time Elapsed 00:00:00.03

@@ -213,13 +213,14 @@ bool SimpleHeadTracking::SmoothDepthData(const XnDepthPixel * srcDepthData,
 	xnOSMemCopy(destDepthData, srcDepthData, nXRes * nYRes * sizeof(XnDepthPixel));
 
 	XnDepthPixel * destDepthDataPtr = destDepthData;
-	int kernelNumber = (2 * smoothHeight + 1) * (2 * smoothWidth + 1);
+	// int kernelNumber = (2 * smoothHeight + 1) * (2 * smoothWidth + 1);
 
 	for (int i = 0; i < nYRes; ++i) 
 	{
 		for (int j = 0; j < nXRes; ++j, ++destDepthDataPtr) 
 		{
 			int total = 0;
+			int count = 0;
 
 			for (int m = i - smoothHeight; m <= i + smoothHeight; ++m) 
 			{
@@ -231,11 +232,13 @@ bool SimpleHeadTracking::SmoothDepthData(const XnDepthPixel * srcDepthData,
 					if (n >= 0 && n < nXRes)
 					{
 						total += destDepthData[m * nXRes + n]; 
+						count = count + 1;
 					}
 				}
 			}
 
-			*destDepthDataPtr = (total - (*destDepthDataPtr)) / (kernelNumber - 1);
+			*destDepthDataPtr = (float) ( (float)(total) / (float)(count) );
+			// *destDepthDataPtr = (total - (*destDepthDataPtr)) / (kernelNumber - 1);
 			// destDepthData[i * nXRes + j] = (total - srcDepthData[i * nXRes + j]) / (kernelNumber - 1);
 		}
 	}
