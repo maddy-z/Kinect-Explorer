@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Canny Algo", "Canny Algo\Ca
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Image Pyramid", "Image Pyramid\Image Pyramid.vcxproj", "{DE8CE809-E37F-4AEF-A68A-8D0046FB0A47}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple3DScene", "Simple3DScene\Simple3DScene.vcxproj", "{A89E5410-3709-4246-A458-E6B99536D73A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,6 +33,10 @@ Global
 		{DE8CE809-E37F-4AEF-A68A-8D0046FB0A47}.Debug|Win32.Build.0 = Debug|Win32
 		{DE8CE809-E37F-4AEF-A68A-8D0046FB0A47}.Release|Win32.ActiveCfg = Release|Win32
 		{DE8CE809-E37F-4AEF-A68A-8D0046FB0A47}.Release|Win32.Build.0 = Release|Win32
+		{A89E5410-3709-4246-A458-E6B99536D73A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A89E5410-3709-4246-A458-E6B99536D73A}.Debug|Win32.Build.0 = Debug|Win32
+		{A89E5410-3709-4246-A458-E6B99536D73A}.Release|Win32.ActiveCfg = Release|Win32
+		{A89E5410-3709-4246-A458-E6B99536D73A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
