@@ -1,4 +1,4 @@
-﻿Build started 2012-6-12 20:13:25.
+﻿Build started 2012-6-13 18:20:38.
 Environment at start of build:
 MSBuildExtensionsPath32 = C:\Program Files\MSBuild
 MSBuildExtensionsPath = C:\Program Files\MSBuild
@@ -68,9 +68,9 @@ VTK = D:\PCL_dependencies\VTK 5.6
 windir = C:\WINDOWS
 wxWidgets = D:\PCL_dependencies\wxWidgets-2.9.2
 
-20:13:25.843     1>Project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" on node 2 (clean target(s)).
-20:13:25.843     1>Building with tools version "4.0".
-20:13:25.843     1>Target "_CheckForInvalidConfigurationAndPlatform: (TargetId:16)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (entry point):
+18:20:38.968     1>Project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" on node 2 (clean target(s)).
+18:20:38.968     1>Building with tools version "4.0".
+18:20:38.968     1>Target "_CheckForInvalidConfigurationAndPlatform: (TargetId:16)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (entry point):
                    Task "Error" skipped, due to false condition; ( '$(_InvalidConfigurationError)' == 'true' ) was evaluated as ( '' == 'true' ).
                    Task "Warning" skipped, due to false condition; ( '$(_InvalidConfigurationWarning)' == 'true' ) was evaluated as ( '' == 'true' ).
                    Task "Message" (TaskId:16)
@@ -82,18 +82,18 @@ wxWidgets = D:\PCL_dependencies\wxWidgets-2.9.2
                    Task "Error" skipped, due to false condition; ('$(OutDir)' != '' and !HasTrailingSlash('$(OutDir)')) was evaluated as ('D:\Fangmai Zheng\Kinect-Explorer\Debug\' != '' and !HasTrailingSlash('D:\Fangmai Zheng\Kinect-Explorer\Debug\')).
                    Task "Error" skipped, due to false condition; ('$(BaseIntermediateOutputPath)' != '' and !HasTrailingSlash('$(BaseIntermediateOutputPath)')) was evaluated as ('obj\' != '' and !HasTrailingSlash('obj\')).
                    Task "Error" skipped, due to false condition; ('$(IntermediateOutputPath)' != '' and !HasTrailingSlash('$(IntermediateOutputPath)')) was evaluated as ('Debug\' != '' and !HasTrailingSlash('Debug\')).
-20:13:25.843     1>Done building target "_CheckForInvalidConfigurationAndPlatform" in project "Canny Algo.vcxproj".: (TargetId:16)
-20:13:25.843     1>Target "_PrepareForClean: (TargetId:17)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.BuildSteps.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Done building target "_CheckForInvalidConfigurationAndPlatform" in project "Canny Algo.vcxproj".: (TargetId:16)
+18:20:38.968     1>Target "_PrepareForClean: (TargetId:17)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.BuildSteps.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
                    Task "Delete" skipped, due to false condition; (Exists($(LastBuildState))) was evaluated as (Exists(Debug\Canny Algo.lastbuildstate)).
-20:13:25.843     1>Done building target "_PrepareForClean" in project "Canny Algo.vcxproj".: (TargetId:17)
-20:13:25.843     1>Target "BeforeClean: (TargetId:18)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
-20:13:25.843     1>Done building target "BeforeClean" in project "Canny Algo.vcxproj".: (TargetId:18)
+18:20:38.968     1>Done building target "_PrepareForClean" in project "Canny Algo.vcxproj".: (TargetId:17)
+18:20:38.968     1>Target "BeforeClean: (TargetId:18)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Done building target "BeforeClean" in project "Canny Algo.vcxproj".: (TargetId:18)
                    Target "UnmanagedUnregistration" skipped, due to false condition; ((('$(_AssemblyTimestampBeforeCompile)' != '$(_AssemblyTimestampAfterCompile)' or '$(RegisterForComInterop)' != 'true' or '$(OutputType)' != 'library') or
                                        ('$(_AssemblyTimestampBeforeCompile)' == '')) and
                                       Exists('@(_UnmanagedRegistrationCache)')) was evaluated as ((('' != '' or '' != 'true' or 'exe' != 'library') or
                                        ('' == '')) and
                                       Exists('obj\Canny Algo.vcxproj.UnmanagedRegistration.cache')).
-20:13:25.843     1>Target "CoreClean: (TargetId:19)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Target "CoreClean: (TargetId:19)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
                    Task "Delete" (TaskId:18)
                    Done executing task "Delete". (TaskId:18)
                    Task "ReadLinesFromFile" (TaskId:19)
@@ -112,23 +112,23 @@ wxWidgets = D:\PCL_dependencies\wxWidgets-2.9.2
                    Done executing task "MakeDir". (TaskId:24)
                    Task "WriteLinesToFile" (TaskId:25)
                    Done executing task "WriteLinesToFile". (TaskId:25)
-20:13:25.843     1>Done building target "CoreClean" in project "Canny Algo.vcxproj".: (TargetId:19)
+18:20:38.968     1>Done building target "CoreClean" in project "Canny Algo.vcxproj".: (TargetId:19)
                    Target "AssignProjectConfiguration" skipped, due to false condition; ('@(ProjectReference)'!='') was evaluated as (''!='').
-20:13:25.843     1>Target "_SplitProjectReferencesByFileExistence: (TargetId:20)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CleanReferencedProjects" depends on it):
+18:20:38.968     1>Target "_SplitProjectReferencesByFileExistence: (TargetId:20)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CleanReferencedProjects" depends on it):
                    Task "ResolveNonMSBuildProjectOutput" skipped, due to false condition; ('$(BuildingInsideVisualStudio)'=='true' and '@(ProjectReferenceWithConfiguration)'!='') was evaluated as ('true'=='true' and ''!='').
-20:13:25.843     1>Done building target "_SplitProjectReferencesByFileExistence" in project "Canny Algo.vcxproj".: (TargetId:20)
-20:13:25.843     1>Target "CleanReferencedProjects: (TargetId:21)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Done building target "_SplitProjectReferencesByFileExistence" in project "Canny Algo.vcxproj".: (TargetId:20)
+18:20:38.968     1>Target "CleanReferencedProjects: (TargetId:21)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
                    Task "MSBuild" skipped, due to false condition; ('$(BuildingInsideVisualStudio)' != 'true' and '$(BuildProjectReferences)' == 'true' and '@(_MSBuildProjectReferenceExistent)' != '') was evaluated as ('true' != 'true' and 'true' == 'true' and '' != '').
-20:13:25.843     1>Done building target "CleanReferencedProjects" in project "Canny Algo.vcxproj".: (TargetId:21)
-20:13:25.843     1>Target "CleanPublishFolder: (TargetId:22)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Done building target "CleanReferencedProjects" in project "Canny Algo.vcxproj".: (TargetId:21)
+18:20:38.968     1>Target "CleanPublishFolder: (TargetId:22)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
                    Task "RemoveDir" skipped, due to false condition; ('$(PublishDir)'=='$(OutputPath)app.publish\' and Exists('$(PublishDir)')) was evaluated as ('D:\Fangmai Zheng\Kinect-Explorer\Debug\app.publish\'=='D:\Fangmai Zheng\Kinect-Explorer\Debug\app.publish\' and Exists('D:\Fangmai Zheng\Kinect-Explorer\Debug\app.publish\')).
-20:13:25.843     1>Done building target "CleanPublishFolder" in project "Canny Algo.vcxproj".: (TargetId:22)
-20:13:25.843     1>Target "AfterClean: (TargetId:23)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
-20:13:25.843     1>Done building target "AfterClean" in project "Canny Algo.vcxproj".: (TargetId:23)
+18:20:38.968     1>Done building target "CleanPublishFolder" in project "Canny Algo.vcxproj".: (TargetId:22)
+18:20:38.968     1>Target "AfterClean: (TargetId:23)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Done building target "AfterClean" in project "Canny Algo.vcxproj".: (TargetId:23)
                    Target "EntityClean" skipped, due to false condition; ('@(EntityDeploy)' != '') was evaluated as ('' != '').
-20:13:25.843     1>Target "BeforeCppClean: (TargetId:24)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
-20:13:25.843     1>Done building target "BeforeCppClean" in project "Canny Algo.vcxproj".: (TargetId:24)
-20:13:25.843     1>Target "CoreCppClean: (TargetId:25)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
+18:20:38.968     1>Target "BeforeCppClean: (TargetId:24)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
+18:20:38.968     1>Done building target "BeforeCppClean" in project "Canny Algo.vcxproj".: (TargetId:24)
+18:20:38.968     1>Target "CoreCppClean: (TargetId:25)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
                    Task "MakeDir" (TaskId:26)
                    Done executing task "MakeDir". (TaskId:26)
                    Using "CppClean" task from assembly "Microsoft.Build.CppTasks.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a".
@@ -136,18 +136,18 @@ wxWidgets = D:\PCL_dependencies\wxWidgets-2.9.2
                    Done executing task "CppClean". (TaskId:27)
                    Task "WriteLinesToFile" (TaskId:28)
                    Done executing task "WriteLinesToFile". (TaskId:28)
-20:13:25.843     1>Done building target "CoreCppClean" in project "Canny Algo.vcxproj".: (TargetId:25)
-20:13:25.843     1>Target "AfterCppClean: (TargetId:26)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
-20:13:25.843     1>Done building target "AfterCppClean" in project "Canny Algo.vcxproj".: (TargetId:26)
-20:13:25.843     1>Target "PGInstrumentedClean: (TargetId:27)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
+18:20:38.968     1>Done building target "CoreCppClean" in project "Canny Algo.vcxproj".: (TargetId:25)
+18:20:38.968     1>Target "AfterCppClean: (TargetId:26)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
+18:20:38.968     1>Done building target "AfterCppClean" in project "Canny Algo.vcxproj".: (TargetId:26)
+18:20:38.968     1>Target "PGInstrumentedClean: (TargetId:27)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "CppClean" depends on it):
                    Task "Delete" (TaskId:29)
                    Done executing task "Delete". (TaskId:29)
-20:13:25.843     1>Done building target "PGInstrumentedClean" in project "Canny Algo.vcxproj".: (TargetId:27)
-20:13:25.843     1>Target "CppClean: (TargetId:28)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
-20:13:25.843     1>Done building target "CppClean" in project "Canny Algo.vcxproj".: (TargetId:28)
-20:13:25.843     1>Target "Clean: (TargetId:29)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (entry point):
-20:13:25.843     1>Done building target "Clean" in project "Canny Algo.vcxproj".: (TargetId:29)
-20:13:25.843     1>Done Building Project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (clean target(s)).
+18:20:38.968     1>Done building target "PGInstrumentedClean" in project "Canny Algo.vcxproj".: (TargetId:27)
+18:20:38.968     1>Target "CppClean: (TargetId:28)" in file "C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (target "Clean" depends on it):
+18:20:38.968     1>Done building target "CppClean" in project "Canny Algo.vcxproj".: (TargetId:28)
+18:20:38.968     1>Target "Clean: (TargetId:29)" in file "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets" from project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (entry point):
+18:20:38.968     1>Done building target "Clean" in project "Canny Algo.vcxproj".: (TargetId:29)
+18:20:38.968     1>Done Building Project "D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj" (clean target(s)).
 
 Project Performance Summary:
         0 ms  D:\Fangmai Zheng\Kinect-Explorer\Canny Algo\Canny Algo.vcxproj   1 calls

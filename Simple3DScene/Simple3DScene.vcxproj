@@ -37,10 +37,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\3rd Party Lib\include\OpenGL;$(IncludePath)</IncludePath>
+    <IncludePath>..\3rd Party Lib\include\AntTweakBar;..\3rd Party Lib\include\OpenGL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>..\3rd Party Lib\lib\OpenGL\Glew;..\3rd Party Lib\lib\OpenGL\Glui;..\3rd Party Lib\lib\OpenGL\Glut;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\3rd Party Lib\lib\AntTweakBar;..\3rd Party Lib\lib\OpenGL\Glew;..\3rd Party Lib\lib\OpenGL\Glui;..\3rd Party Lib\lib\OpenGL\Glut;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
