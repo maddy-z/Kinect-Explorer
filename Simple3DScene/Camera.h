@@ -18,6 +18,7 @@ public:
 	};
 
 	Camera ( CAM_TYPE ct = LAND_CAM );			// Default: Land Camera
+	Camera ( const Vec3f & camPos, const Vec3f & camView, const Vec3f & camAlong, CAM_TYPE ct = LAND_CAM );
 	virtual ~Camera ();
 
 	void SetCameraArg ( const Vec3f & camPos, const Vec3f & camView, const Vec3f & camAlong );

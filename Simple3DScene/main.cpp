@@ -27,7 +27,7 @@
 #define		QUAT_DEBUG
 
 // 
-// Forward Declaration
+// FORWARD DECLARATION
 // 
 
 void Reshape ( int width, int height );
@@ -67,13 +67,13 @@ Camera g_Camera ( Camera::AIR_CAM );
 
 Vec3f g_CameraPos ( 0.0f, 13.0f, 15.0f );
 
-//float g_CameraPosX		=	0.0f;
-//float g_CameraPosY		=	13.0f;
-//float g_CameraPosZ		=	15.0f;
+// float g_CameraPosX		=	0.0f;
+// float g_CameraPosY		=	13.0f;
+// float g_CameraPosZ		=	15.0f;
 
-//Vec3f g_CameraDirView  ( 0.0f, 1.0f, 0.0f );
-//Vec3f g_CameraDirAlong ( 1.0f, 0.0f, 0.0f );
-//Vec3f g_CameraDirUp	 ( 0.0f, 0.0f, 1.0f );
+// Vec3f g_CameraDirView  ( 0.0f, 1.0f, 0.0f );
+// Vec3f g_CameraDirAlong ( 1.0f, 0.0f, 0.0f );
+// Vec3f g_CameraDirUp	 ( 0.0f, 0.0f, 1.0f );
 
 // float g_CameraDirView[]	= { 0.0f, 1.0f, 0.0f };
 // float g_CameraDirSide[]	= { 1.0f, 0.0f, 0.0f };
@@ -85,7 +85,7 @@ float g_CameraRotQuat[]		= { 0.0f, 0.0f, 0.0f, 1.0f };
 // Scene Arguments Settings
 // 
 
-float g_SceneRotQuat[]		= { 0.0f, 0.0f, 0.0f, 1.0f };
+float g_SceneRotQuat[]		=	{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 float g_ObjMatAmbient[]		=	{ 0.7f, 0.5f, 0.8f, 1.0f };
 float g_ObjMatDiffuse[]		=	{ 0.7f, 0.5f, 0.8f, 1.0f };
@@ -98,14 +98,14 @@ float g_BoxMatSpecular[]	=	{ 0.4f, 0.2f, 0.1f, 1.0f };
 float g_BoxMatShininess[]	=	{ 10.0f };
 
 // Box Size Settings
-float g_BoxSizeX			= 15.0f;
-float g_BoxSizeY			= 15.0f;
-float g_BoxSizeZ			= 2.0f;
-float g_BoxFaceThickness	= 0.15f;
+float g_BoxSizeX			=	15.0f;
+float g_BoxSizeY			=	15.0f;
+float g_BoxSizeZ			=	2.5f;
+float g_BoxFaceThickness	=	0.15f;
 
 // Object and Cube Size Settings
-float g_ObjSize				= 1.2f;
-float g_CubeSize			= 1.0f;
+float g_ObjSize				=	1.2f;
+float g_CubeSize			=	1.0f;
 
 // Light 0 Settings
 const float g_Light0_Ambient[]		=	{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -160,13 +160,16 @@ void SceneInit ( void )
 	// Vec3f camUp;
 	// Vec3f::Cross3 ( camUp, camAlong, camView );
 	
-	// Initialize Camera Position and Directions
+	// Initialize Camera Position and Direction
 	Vec3f	camAlong ( -g_CameraPos.y(), -(-g_CameraPos.x()), 0 ), 
 			camView ( 0.0f - g_CameraPos.x(), 0.0f - g_CameraPos.y(), 0.0f - g_CameraPos.z() );
 	
 	g_Camera.SetCameraArg ( g_CameraPos, camView, camAlong );
 
+	// 
 	// Initialize LIGHT 0 Position and Materials
+	// 
+
 	glLightfv ( GL_LIGHT0, GL_AMBIENT, g_Light0_Ambient );
 	glLightfv ( GL_LIGHT0, GL_DIFFUSE, g_Light0_Diffuse );
 	glLightfv ( GL_LIGHT0, GL_SPECULAR, g_Light0_Specular );
@@ -248,29 +251,29 @@ void Display ( void )
 	// Draw Camera Axes
 	// 
 	//
-	//glColor3f ( 1.0f, 0.0f, 0.0f );						// Forward Axe
-	//glBegin ( GL_LINES );
+	// glColor3f ( 1.0f, 0.0f, 0.0f );						// Forward Axe
+	// glBegin ( GL_LINES );
 	//	glVertex3f (	g_CameraPos.x() + g_CameraDirView.x(), g_CameraPos.y() + g_CameraDirView.y(), g_CameraPos.z() + g_CameraDirView.z() );
 	//	glVertex3f (	g_CameraPos.x() + 2.0f * g_CameraDirView.x(), 
 	//					g_CameraPos.y() + 2.0f * g_CameraDirView.y(), 
 	//					g_CameraPos.z() + 2.0f * g_CameraDirView.z() );
-	//glEnd();
+	// glEnd();
 
-	//glColor3f ( 0.0f, 0.0f, 1.0f );						// Along Axe
-	//glBegin ( GL_LINES );
+	// glColor3f ( 0.0f, 0.0f, 1.0f );						// Along Axe
+	// glBegin ( GL_LINES );
 	//	glVertex3f (	g_CameraPos.x() + g_CameraDirView.x(), g_CameraPos.y() + g_CameraDirView.y(), g_CameraPos.z() + g_CameraDirView.z() );
 	//	glVertex3f (	g_CameraPos.x() + g_CameraDirView.x() + g_CameraDirAlong.x(), 
 	//					g_CameraPos.y() + g_CameraDirView.y() + g_CameraDirAlong.y(), 
 	//					g_CameraPos.z() + g_CameraDirView.z() + g_CameraDirAlong.z());
-	//glEnd();
+	// glEnd();
 
-	//glColor3f ( 0.0f, 1.0f, 0.0f );						// Up Axe
-	//glBegin ( GL_LINES );
+	// glColor3f ( 0.0f, 1.0f, 0.0f );						// Up Axe
+	// glBegin ( GL_LINES );
 	//	glVertex3f (	g_CameraPos.x() + g_CameraDirView.x(), g_CameraPos.y() + g_CameraDirView.y(), g_CameraPos.z() + g_CameraDirView.z() );
 	//	glVertex3f (	g_CameraPos.x() + g_CameraDirView.x() + g_CameraDirUp.x(), 
 	//					g_CameraPos.y() + g_CameraDirView.y() + g_CameraDirUp.y(), 
 	//					g_CameraPos.z() + g_CameraDirView.z() + g_CameraDirUp.z() );
-	//glEnd();
+	// glEnd();
 
 	// 
 	// Draw Box
@@ -377,6 +380,7 @@ int main ( int argc, char ** argv )
 	glutDisplayFunc ( Display );
 	glutReshapeFunc ( Reshape );
 	glutIdleFunc ( NULL );
+	glutFullScreen ();
 
 	// OpenGL Initialization
 	GlInit ();
@@ -429,7 +433,7 @@ int main ( int argc, char ** argv )
 	// Tw Terminate
 	TwTerminate ();	
 
-	return 0;
+	exit ( EXIT_SUCCESS );
 }
 
 // 
@@ -470,7 +474,8 @@ void Keyboard ( unsigned char key, int x, int y )
 
 	switch ( key ) 
 	{
-	
+	case 27:	exit(0);
+
 	case 'w':	g_Camera.Walk (  speed, wall );		break;
 	case 's':	g_Camera.Walk ( -speed, wall );		break;
 	case 'd':	g_Camera.Strafe (  speed, wall );	break;
