@@ -212,3 +212,7 @@ void Camera::Fly ( GLfloat delta )
 	Update ();
 }
 
+void Camera::PrintPosition ()
+{
+	std::cout << "Camera Position = " << m_Position.toString() << std::endl;
+}

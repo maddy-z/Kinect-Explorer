@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <climits>
 
 #include <iostream>
@@ -25,15 +26,16 @@
 #define		RAD2DEG			( 180.0f / PI )
 
 #define		QUAT_DEBUG
+#define		PROJ_DEBUG
 
 // 
-// FORWARD DECLARATION
+// FORWARD DECLARATIONS
 // 
 
-void Reshape ( int width, int height );
-void Keyboard ( unsigned char key, int x, int y );
-void MouseMotion ( int x, int y );
-void MouseFunc ( int button, int state, int x, int y );
+void		Reshape			( int width, int height );
+void		Keyboard		( unsigned char key, int x, int y );
+void		MouseMotion		( int x, int y );
+void		MouseFunc		( int button, int state, int x, int y );
 
 // 
 // User-Interaction Mouse Settings
@@ -63,9 +65,10 @@ const int glutMainWndPosY	=	150;
 // Camera Arguments Settings
 // 
 
-Camera g_Camera ( Camera::AIR_CAM );
+Camera	g_Camera ( Camera::AIR_CAM );
+Vec3f	g_CameraPos ( 0.0f, 13.0f, 15.0f );
 
-Vec3f g_CameraPos ( 0.0f, 13.0f, 15.0f );
+float	g_CameraRotQuat[]	=	{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 // float g_CameraPosX		=	0.0f;
 // float g_CameraPosY		=	13.0f;
@@ -75,11 +78,9 @@ Vec3f g_CameraPos ( 0.0f, 13.0f, 15.0f );
 // Vec3f g_CameraDirAlong ( 1.0f, 0.0f, 0.0f );
 // Vec3f g_CameraDirUp	 ( 0.0f, 0.0f, 1.0f );
 
-// float g_CameraDirView[]	= { 0.0f, 1.0f, 0.0f };
-// float g_CameraDirSide[]	= { 1.0f, 0.0f, 0.0f };
-// float g_CameraDirUp[]	= { 0.0f, 0.0f, 1.0f };
-
-float g_CameraRotQuat[]		= { 0.0f, 0.0f, 0.0f, 1.0f };
+// float g_CameraDirView[]	=	{ 0.0f, 1.0f, 0.0f };
+// float g_CameraDirSide[]	=	{ 1.0f, 0.0f, 0.0f };
+// float g_CameraDirUp[]	=	{ 0.0f, 0.0f, 1.0f };
 
 // 
 // Scene Arguments Settings
@@ -90,28 +91,36 @@ float g_SceneRotQuat[]		=	{ 0.0f, 0.0f, 0.0f, 1.0f };
 float g_ObjMatAmbient[]		=	{ 0.7f, 0.5f, 0.8f, 1.0f };
 float g_ObjMatDiffuse[]		=	{ 0.7f, 0.5f, 0.8f, 1.0f };
 float g_ObjMatSpecular[]	=	{ 0.7f, 0.5f, 0.8f, 1.0f };
-float g_ObjMatShininess[]	=	{ 10.0f };
+float g_ObjMatShininess[]	=	{ 128.0f };
 
 float g_BoxMatAmbient[]		=	{ 0.4f, 0.2f, 0.1f, 1.0f };
 float g_BoxMatDiffuse[]		=	{ 0.4f, 0.2f, 0.1f, 1.0f };
 float g_BoxMatSpecular[]	=	{ 0.4f, 0.2f, 0.1f, 1.0f };
-float g_BoxMatShininess[]	=	{ 10.0f };
+float g_BoxMatShininess[]	=	{ 128.0f };
 
 // Box Size Settings
-float g_BoxSizeX			=	15.0f;
-float g_BoxSizeY			=	15.0f;
-float g_BoxSizeZ			=	2.5f;
-float g_BoxFaceThickness	=	0.15f;
+float g_BoxSizeX			=	11.0f;
+float g_BoxSizeY			=	7.0f;
+float g_BoxSizeZ			=	1.3f;
+float g_BoxFaceThickness	=	0.10f;
+
+float g_BoxMetricSizeY		=	80.0f;															// Centimeter
+float g_BoxMetricSizeZ		=	( g_BoxSizeZ / g_BoxSizeY ) * g_BoxMetricSizeY;
+
+float g_CameraMetricSizeX	=	0.0f;
+float g_CameraMetricSizeY	=	100.0f;
+float g_CameraMetricSizeZ	=	100.0f;
 
 // Object and Cube Size Settings
-float g_ObjSize				=	1.2f;
+float g_ObjSize				=	0.8f;
 float g_CubeSize			=	1.0f;
 
-// Light 0 Settings
+// Global Light Arguments && Light 0 Settings
 const float g_Light0_Ambient[]		=	{ 0.0f, 0.0f, 0.0f, 1.0f };
 const float g_Light0_Diffuse[]		=	{ 1.0f, 1.0f, 1.0f, 1.0f };
 const float g_Light0_Specular[]		=	{ 1.0f, 1.0f, 1.0f, 1.0f };
-const float g_Light0_Position[]		=	{ 7.0f, 3.0f, 8.0f, 1.0f };
+const float g_Light0_Position[]		=	{ 5.0f, -3.0f, 0.5f, 1.0f };
+
 const float g_LightModelAmbient[]	=	{ 0.2f, 0.2f, 0.2f, 1.0f };
 
 // 
@@ -137,17 +146,8 @@ int GlInit ( void )
 	// glCullFace ( GL_FRONT );
 	// glCullFace ( GL_BACK );
 
-	glLightModelfv ( GL_LIGHT_MODEL_AMBIENT, g_LightModelAmbient );
-	glLightModeli  ( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
-	glLightModeli  ( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
-	glLightModeli  ( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
-
-	// Matrix Settings
+	// Viewport Settings
 	glViewport ( 0, 0, glutMainWndWidth, glutMainWndHeight );
-
-	glMatrixMode ( GL_PROJECTION );
-	glLoadIdentity ();
-	gluPerspective ( 45.0f, (GLdouble)(glutMainWndWidth) / (GLdouble)(glutMainWndHeight), 1.0f, 50.0f );
 
 	// Set Window Size for Tweak Bar
 	TwWindowSize ( glutMainWndWidth, glutMainWndHeight );
@@ -157,23 +157,92 @@ int GlInit ( void )
 
 void SceneInit ( void )
 {
-	// Vec3f camUp;
-	// Vec3f::Cross3 ( camUp, camAlong, camView );
+	// 
+	// Initializing Global Light Model 
+	// 
 	
-	// Initialize Camera Position and Direction
-	Vec3f	camAlong ( -g_CameraPos.y(), -(-g_CameraPos.x()), 0 ), 
-			camView ( 0.0f - g_CameraPos.x(), 0.0f - g_CameraPos.y(), 0.0f - g_CameraPos.z() );
+	glLightModelfv	( GL_LIGHT_MODEL_AMBIENT,		g_LightModelAmbient );
+	glLightModeli	( GL_LIGHT_MODEL_LOCAL_VIEWER,	GL_TRUE );
+	glLightModeli	( GL_LIGHT_MODEL_TWO_SIDE,		GL_FALSE );
+	glLightModeli	( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
+
+	// Initializing LIGHT 0 Position and Materials
+	glLightfv		( GL_LIGHT0, GL_AMBIENT,  g_Light0_Ambient  );
+	glLightfv		( GL_LIGHT0, GL_DIFFUSE,  g_Light0_Diffuse  );
+	glLightfv		( GL_LIGHT0, GL_SPECULAR, g_Light0_Specular );
+	glLightfv		( GL_LIGHT0, GL_POSITION, g_Light0_Position );
+	
+	// 
+	// Initializing Camera Position and Projection Arguments
+	// 
+
+	// float scaleFactor = 1.3f;
+	float scaleFactor = 1.5f;
+
+// #undef PROJ_DEBUG
+
+#ifndef PROJ_DEBUG
+
+	// Initializing Camera Position and Direction
+	// g_CameraPos.Set ( 0.0f, 0.0f, ( 30.0f + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	// Vec3f	camAlong ( 1.0f, 0.0f, 0.0f );
+	// Vec3f	camView ( 0.0f - g_CameraPos.x(), 0.0f - g_CameraPos.y(), 0.0f - g_CameraPos.z() );
+
+	// g_Camera.SetCameraArg ( g_CameraPos, camView, camAlong );
+	
+	// Initializing Camera Position and Direction
+	g_CameraPos.Set ( 0.0f, -g_CameraMetricSizeY * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	Vec3f	camAlong ( -g_CameraPos.y(), -(-g_CameraPos.x()), 0 );
+	Vec3f	camView ( 0.0f - g_CameraPos.x(), 0.0f - g_CameraPos.y(), 0.0f - g_CameraPos.z() );
 	
 	g_Camera.SetCameraArg ( g_CameraPos, camView, camAlong );
 
-	// 
-	// Initialize LIGHT 0 Position and Materials
-	// 
+#else
+	
+	// Initializing Camera Position and Direction
+	// g_CameraPos.Set ( 0.0f, 0.0f, ( 30.0f + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor + 10.0f );
+	g_CameraPos.Set ( 0.0f * scaleFactor, ( -g_CameraMetricSizeY ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
 
-	glLightfv ( GL_LIGHT0, GL_AMBIENT, g_Light0_Ambient );
-	glLightfv ( GL_LIGHT0, GL_DIFFUSE, g_Light0_Diffuse );
-	glLightfv ( GL_LIGHT0, GL_SPECULAR, g_Light0_Specular );
-	glLightfv ( GL_LIGHT0, GL_POSITION, g_Light0_Position );
+	Vec3f	camView  ( 0.0f, 0.0f, -1.0f );
+	Vec3f	camAlong ( 1.0f, 0.0f,  0.0f );
+
+	g_Camera.SetCameraArg ( g_CameraPos, camView, camAlong );
+
+#endif
+	
+	// Camera Projection Settings
+	glMatrixMode	( GL_PROJECTION );
+	glLoadIdentity	();
+
+#ifndef PROJ_DEBUG
+	
+	gluPerspective ( 45.0f, (GLdouble)(glutMainWndWidth) / (GLdouble)(glutMainWndHeight), 0.1f, 30.0f );
+
+#else
+
+	g_Camera.PrintPosition();
+
+	float camPosX = g_Camera.GetPosition().x();
+	float camPosY = g_Camera.GetPosition().y();
+	float camPosZ = g_Camera.GetPosition().z();
+	
+	float xLeft = ( -g_BoxSizeX ) / 2.0f - 5.0f, xRight = ( g_BoxSizeX ) / 2.0f + 5.0f;
+	float yBottom = ( -g_BoxSizeY ) / 2.0f - 4.5f, yTop = ( g_BoxSizeY ) / 2.0f + 7.0f;
+	float zNear = 1.0f;
+
+	float x1 = ( xLeft - camPosX )		/ camPosZ;
+	float x2 = ( xRight - camPosX )		/ camPosZ;
+	float y1 = ( yBottom - camPosY )	/ camPosZ;
+	float y2 = ( yTop - camPosY )		/ camPosZ;
+
+	char str[50];
+	sprintf ( str, "<%.2f, %.2f, %.2f, %.2f>", x1, x2, y1, y2 );
+	std::cout << "<x1, x2, y1, y2> = " << std::string ( str ) << std::endl;
+
+	glFrustum ( x1, x2, y1, y2, zNear, camPosZ + 5.0f );
+
+#endif
+
 }
 
 // 
@@ -278,6 +347,7 @@ void Display ( void )
 	// 
 	// Draw Box
 	// 
+	
 	// Set Box Material
     glMaterialfv ( GL_FRONT, GL_AMBIENT, g_BoxMatAmbient );
     glMaterialfv ( GL_FRONT, GL_DIFFUSE, g_BoxMatDiffuse );
@@ -445,22 +515,56 @@ int main ( int argc, char ** argv )
 // 
 
 void Reshape ( int width, int height )
+
 {
+	std::cout << "Start:\tGLUT Window Reshape" << std::endl;
+
 	if ( height == 0 ) {
 		height = 1;
 	}
 
 	glViewport ( 0, 0, width, height );
-	
+
+#ifndef PROJ_DEBUG
+
 	glMatrixMode ( GL_PROJECTION );
 	glLoadIdentity ();
 	gluPerspective ( 45.0f, ( GLdouble ) ( width ) / ( GLdouble ) ( height ), 1.0f, 40.0f );
+
+#else
+
+	/*
+
+	glMatrixMode ( GL_PROJECTION );
+	glLoadIdentity ();
+
+	g_Camera.PrintPosition();
+
+	float camPosX = g_Camera.GetPosition().x();
+	float camPosY = g_Camera.GetPosition().y();
+	float camFarDist = abs ( g_Camera.GetPosition().z() );
+
+	float xLeft = ( -g_BoxSizeX ) / 2.0f - 2.0f, xRight = ( g_BoxSizeX ) / 2.0f + 2.0f;
+	float yBottom = ( -g_BoxSizeY ) / 2.0f - 2.0f, yTop = ( g_BoxSizeY ) / 2.0f + 5.0f;
+	float zNear = 1.0f;
+
+	float x1 = ( xLeft - camPosX ) / camFarDist;
+	float x2 = ( xRight - camPosX ) / camFarDist;
+	float y1 = ( yBottom - camPosY ) / camFarDist;
+	float y2 = ( yTop - camPosY ) / camFarDist;
+
+	glFrustum ( x1, x2, yBottom, yTop, zNear, camFarDist + 1.0f );
+	*/
+
+#endif
 
 	// Send New Window Size to AntTweakBar
     TwWindowSize ( width, height );
 
 	// Recall Display at Next Frame
 	glutPostRedisplay ();
+
+	std::cout << "End:\tGLUT Window Reshape" << std::endl;
 }
 
 // 
@@ -468,12 +572,15 @@ void Reshape ( int width, int height )
 // 
 
 void Keyboard ( unsigned char key, int x, int y )
+
 {
 	float speed = 0.5f;
 	bool wall[4] = { false, false, false, false };
 
 	switch ( key ) 
+	
 	{
+	
 	case 27:	exit(0);
 
 	case 'w':	g_Camera.Walk (  speed, wall );		break;
@@ -481,9 +588,12 @@ void Keyboard ( unsigned char key, int x, int y )
 	case 'd':	g_Camera.Strafe (  speed, wall );	break;
 	case 'a':	g_Camera.Strafe ( -speed, wall );	break;
 
-	default:	return;
+	default:	break;
 	
 	}
+
+	// Call AntTweakBar Event Function
+	TwEventKeyboardGLUT ( key, x, y );
 
 	// Recall Display at Next Frame
 	glutPostRedisplay ();
@@ -494,6 +604,7 @@ void Keyboard ( unsigned char key, int x, int y )
 // 
 
 void MouseMotion ( int x, int y )
+
 {
 
 #ifndef QUAT_DEBUG
@@ -534,6 +645,7 @@ void MouseMotion ( int x, int y )
 
 // Mouse Function
 void MouseFunc ( int button, int state, int x, int y )
+
 {
 
 #ifndef QUAT_DEBUG
@@ -579,4 +691,5 @@ void MouseFunc ( int button, int state, int x, int y )
 	
 	// Recall Display at Next Frame
 	glutPostRedisplay ();
+
 }

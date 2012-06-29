@@ -9,6 +9,7 @@
 #include <opencv2\opencv.hpp>
 
 class HumanDetection
+
 {
 
 public:

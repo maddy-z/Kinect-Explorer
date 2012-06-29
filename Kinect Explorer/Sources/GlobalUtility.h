@@ -62,6 +62,7 @@ namespace GlobalUtility
 	// 
 	
 	bool ConvertCvMat16uByThresholdValue(const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue);
+
 }
 
 #endif

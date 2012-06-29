@@ -42,6 +42,8 @@ public:
 	void Strafe ( GLfloat delta, bool Wall[4] );
 	void Fly ( GLfloat delta );
 
+	void PrintPosition ();
+
 private:
 	
 	CAM_TYPE m_CameraType;

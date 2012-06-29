@@ -4,12 +4,13 @@
 #include <opencv2\opencv.hpp>
 
 class KinectHoleFiller
+
 {
 
 public:
 	
-	static bool NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMat, cv::Mat & destDepthMat);
-	static bool FmmInpaintHoleFilling(const cv::Mat & srcDepthMat, cv::Mat & destDepthMat);
+	static bool NearestNeighborhoodHoleFilling ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat );
+	static bool FmmInpaintHoleFilling ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat );
 
 };
 
