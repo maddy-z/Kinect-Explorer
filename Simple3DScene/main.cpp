@@ -73,11 +73,11 @@ float	g_CameraRotQuat[]	=	{ 0.0f, 0.0f, 0.0f, 1.0f };
 // float g_CameraPosX		=	0.0f;
 // float g_CameraPosY		=	13.0f;
 // float g_CameraPosZ		=	15.0f;
-
+//
 // Vec3f g_CameraDirView  ( 0.0f, 1.0f, 0.0f );
 // Vec3f g_CameraDirAlong ( 1.0f, 0.0f, 0.0f );
-// Vec3f g_CameraDirUp	 ( 0.0f, 0.0f, 1.0f );
-
+// Vec3f g_CameraDirUp	  ( 0.0f, 0.0f, 1.0f );
+//
 // float g_CameraDirView[]	=	{ 0.0f, 1.0f, 0.0f };
 // float g_CameraDirSide[]	=	{ 1.0f, 0.0f, 0.0f };
 // float g_CameraDirUp[]	=	{ 0.0f, 0.0f, 1.0f };
@@ -102,10 +102,10 @@ float g_BoxMatShininess[]	=	{ 128.0f };
 float g_BoxSizeX			=	11.0f;
 float g_BoxSizeY			=	7.0f;
 float g_BoxSizeZ			=	1.3f;
-float g_BoxFaceThickness	=	0.10f;
+float g_BoxFaceThickness	=	0.09f;
 
-float g_BoxMetricSizeY		=	80.0f;															// Centimeter
-float g_BoxMetricSizeZ		=	( g_BoxSizeZ / g_BoxSizeY ) * g_BoxMetricSizeY;
+const float g_BoxMetricSizeY	=	80.0f;															// Centimeter
+const float g_BoxMetricSizeZ	=	( g_BoxSizeZ / g_BoxSizeY ) * g_BoxMetricSizeY;
 
 float g_CameraMetricSizeX	=	0.0f;
 float g_CameraMetricSizeY	=	100.0f;
@@ -116,12 +116,20 @@ float g_ObjSize				=	0.8f;
 float g_CubeSize			=	1.0f;
 
 // Global Light Arguments && Light 0 Settings
-const float g_Light0_Ambient[]		=	{ 0.0f, 0.0f, 0.0f, 1.0f };
-const float g_Light0_Diffuse[]		=	{ 1.0f, 1.0f, 1.0f, 1.0f };
-const float g_Light0_Specular[]		=	{ 1.0f, 1.0f, 1.0f, 1.0f };
+const float g_Light0_Ambient[]		=	{ 0.0f,  0.0f, 0.0f, 1.0f };
+const float g_Light0_Diffuse[]		=	{ 1.0f,  1.0f, 1.0f, 1.0f };
+const float g_Light0_Specular[]		=	{ 1.0f,  1.0f, 1.0f, 1.0f };
 const float g_Light0_Position[]		=	{ 5.0f, -3.0f, 0.5f, 1.0f };
 
-const float g_LightModelAmbient[]	=	{ 0.2f, 0.2f, 0.2f, 1.0f };
+const float g_LightModelAmbient[]	=	{ 0.2f,  0.2f, 0.2f, 1.0f };
+
+// Camera Projecting Frustum Settings
+const float xLeft = ( -g_BoxSizeX ) / 2.0f - 5.0f;
+const float xRight = ( g_BoxSizeX ) / 2.0f + 5.0f;
+const float yBottom = ( -g_BoxSizeY ) / 2.0f - 5.0f;
+const float yTop = ( g_BoxSizeY ) / 2.0f + 5.0f;
+
+const float zNear = 1.0f;
 
 // 
 // OpenGL Initialization Function
@@ -146,9 +154,6 @@ int GlInit ( void )
 	// glCullFace ( GL_FRONT );
 	// glCullFace ( GL_BACK );
 
-	// Viewport Settings
-	glViewport ( 0, 0, glutMainWndWidth, glutMainWndHeight );
-
 	// Set Window Size for Tweak Bar
 	TwWindowSize ( glutMainWndWidth, glutMainWndHeight );
 
@@ -158,7 +163,7 @@ int GlInit ( void )
 void SceneInit ( void )
 {
 	// 
-	// Initializing Global Light Model 
+	// Initializing Global Light Model
 	// 
 	
 	glLightModelfv	( GL_LIGHT_MODEL_AMBIENT,		g_LightModelAmbient );
@@ -185,6 +190,7 @@ void SceneInit ( void )
 
 	// Initializing Camera Position and Direction
 	// g_CameraPos.Set ( 0.0f, 0.0f, ( 30.0f + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	
 	// Vec3f	camAlong ( 1.0f, 0.0f, 0.0f );
 	// Vec3f	camView ( 0.0f - g_CameraPos.x(), 0.0f - g_CameraPos.y(), 0.0f - g_CameraPos.z() );
 
@@ -192,6 +198,7 @@ void SceneInit ( void )
 	
 	// Initializing Camera Position and Direction
 	g_CameraPos.Set ( 0.0f, -g_CameraMetricSizeY * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	
 	Vec3f	camAlong ( -g_CameraPos.y(), -(-g_CameraPos.x()), 0 );
 	Vec3f	camView ( 0.0f - g_CameraPos.x(), 0.0f - g_CameraPos.y(), 0.0f - g_CameraPos.z() );
 	
@@ -200,46 +207,66 @@ void SceneInit ( void )
 #else
 	
 	// Initializing Camera Position and Direction
-	// g_CameraPos.Set ( 0.0f, 0.0f, ( 30.0f + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor + 10.0f );
-	g_CameraPos.Set ( 0.0f * scaleFactor, ( -g_CameraMetricSizeY ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
-
+	g_CameraPos.Set ( 0.0f, 0.0f, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	// g_CameraPos.Set ( 0.0f * scaleFactor, ( -g_CameraMetricSizeY ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor, ( g_CameraMetricSizeZ + g_BoxMetricSizeZ ) * ( g_BoxSizeY / g_BoxMetricSizeY ) * scaleFactor );
+	
 	Vec3f	camView  ( 0.0f, 0.0f, -1.0f );
 	Vec3f	camAlong ( 1.0f, 0.0f,  0.0f );
 
 	g_Camera.SetCameraArg ( g_CameraPos, camView, camAlong );
 
 #endif
-	
+
+#ifndef PROJ_DEBUG
+
+	// Viewport Settings
+	glViewport ( 0, 0, glutMainWndWidth, glutMainWndHeight );
+
 	// Camera Projection Settings
 	glMatrixMode	( GL_PROJECTION );
 	glLoadIdentity	();
-
-#ifndef PROJ_DEBUG
-	
-	gluPerspective ( 45.0f, (GLdouble)(glutMainWndWidth) / (GLdouble)(glutMainWndHeight), 0.1f, 30.0f );
+	gluPerspective	( 45.0f, (GLdouble)(glutMainWndWidth) / (GLdouble)(glutMainWndHeight), 0.1f, 30.0f );
 
 #else
 
 	g_Camera.PrintPosition();
 
-	float camPosX = g_Camera.GetPosition().x();
-	float camPosY = g_Camera.GetPosition().y();
-	float camPosZ = g_Camera.GetPosition().z();
+	const float camPosX = g_Camera.GetPosition().x();
+	const float camPosY = g_Camera.GetPosition().y();
+	const float camPosZ = g_Camera.GetPosition().z();
 	
+	// float xLeft = ( -g_BoxSizeX ) / 2.0f - 5.0f, xRight = ( g_BoxSizeX ) / 2.0f + 5.0f;
+	// float yBottom = ( -g_BoxSizeY ) / 2.0f - 5.0f, yTop = ( g_BoxSizeY ) / 2.0f + 5.0f;
+	/*
 	float xLeft = ( -g_BoxSizeX ) / 2.0f - 5.0f, xRight = ( g_BoxSizeX ) / 2.0f + 5.0f;
 	float yBottom = ( -g_BoxSizeY ) / 2.0f - 4.5f, yTop = ( g_BoxSizeY ) / 2.0f + 7.0f;
-	float zNear = 1.0f;
+	*/
+	// float zNear = 1.0f;
 
-	float x1 = ( xLeft - camPosX )		/ camPosZ;
-	float x2 = ( xRight - camPosX )		/ camPosZ;
-	float y1 = ( yBottom - camPosY )	/ camPosZ;
-	float y2 = ( yTop - camPosY )		/ camPosZ;
+	const float x1 = ( xLeft - camPosX )	/ camPosZ * zNear;
+	const float x2 = ( xRight - camPosX )	/ camPosZ * zNear;
+	const float y1 = ( yBottom - camPosY )	/ camPosZ * zNear;
+	const float y2 = ( yTop - camPosY )		/ camPosZ * zNear;
 
 	char str[50];
 	sprintf ( str, "<%.2f, %.2f, %.2f, %.2f>", x1, x2, y1, y2 );
 	std::cout << "<x1, x2, y1, y2> = " << std::string ( str ) << std::endl;
 
-	glFrustum ( x1, x2, y1, y2, zNear, camPosZ + 5.0f );
+	// glViewport ( 0, 0, glutMainWndWidth, glutMainWndHeight );
+
+	// Viewport Settings
+	const float f = abs ( (x1 - x2) / (y1 - y2) ); 
+	if ( f > (float)(glutMainWndWidth) / (float)(glutMainWndHeight) ) {
+		glViewport ( 0, 0, glutMainWndWidth, (float)(glutMainWndWidth) / f );
+	}
+	else {
+		glViewport ( 0, 0, glutMainWndHeight * f, glutMainWndHeight );
+	}
+
+	// Camera Projection Settings
+	glMatrixMode	( GL_PROJECTION );
+	glLoadIdentity	();
+	glFrustum		( x1, x2, y1, y2, zNear, camPosZ + 5.0f );
 
 #endif
 
@@ -269,6 +296,7 @@ void Display ( void )
 
 	float camRotTmpMat[16] = { 0.0f };
 	ConvertQuaternionToMatrix ( g_CameraRotQuat, camRotTmpMat );
+	
 	// Matrix camRotMat ( camRotTmpMat );
 
 	// g_CameraDirView.Set ( 0.0f, 1.0f, 0.0f );
@@ -279,6 +307,7 @@ void Display ( void )
 	// camRotMat.TransformDirection ( g_CameraDirUp );
 	
 	/*
+	
 	g_Camera.SetCameraArg ( g_Camera.GetPosition(), g_CameraDirView, g_CameraDirAlong );
 
 	char str[50];
@@ -288,6 +317,7 @@ void Display ( void )
 	std::cout << "Camera Dir Side:\t" << g_CameraDirAlong.toString() << std::endl;
 	std::cout << "Camera Dir Up:\t\t" << g_CameraDirUp.toString() << std::endl;
 	std::cout << std::endl;
+	
 	*/
 
 #endif
@@ -523,38 +553,51 @@ void Reshape ( int width, int height )
 		height = 1;
 	}
 
-	glViewport ( 0, 0, width, height );
-
 #ifndef PROJ_DEBUG
 
-	glMatrixMode ( GL_PROJECTION );
-	glLoadIdentity ();
-	gluPerspective ( 45.0f, ( GLdouble ) ( width ) / ( GLdouble ) ( height ), 1.0f, 40.0f );
+	// Viewport Settings
+	glViewport ( 0, 0, width, height );
+
+	// Camera Projection Settings
+	glMatrixMode	( GL_PROJECTION );
+	glLoadIdentity	();
+	gluPerspective	( 45.0f, (GLdouble)(width) / (GLdouble)(height), 0.1f, 30.0f );
 
 #else
 
-	/*
-
-	glMatrixMode ( GL_PROJECTION );
-	glLoadIdentity ();
-
 	g_Camera.PrintPosition();
 
-	float camPosX = g_Camera.GetPosition().x();
-	float camPosY = g_Camera.GetPosition().y();
-	float camFarDist = abs ( g_Camera.GetPosition().z() );
-
-	float xLeft = ( -g_BoxSizeX ) / 2.0f - 2.0f, xRight = ( g_BoxSizeX ) / 2.0f + 2.0f;
-	float yBottom = ( -g_BoxSizeY ) / 2.0f - 2.0f, yTop = ( g_BoxSizeY ) / 2.0f + 5.0f;
+	const float camPosX = g_Camera.GetPosition().x();
+	const float camPosY = g_Camera.GetPosition().y();
+	const float camPosZ = g_Camera.GetPosition().z();
+	
+	/*
+	float xLeft = ( -g_BoxSizeX ) / 2.0f - 5.0f, xRight = ( g_BoxSizeX ) / 2.0f + 5.0f;
+	float yBottom = ( -g_BoxSizeY ) / 2.0f - 5.0f, yTop = ( g_BoxSizeY ) / 2.0f + 5.0f;
 	float zNear = 1.0f;
-
-	float x1 = ( xLeft - camPosX ) / camFarDist;
-	float x2 = ( xRight - camPosX ) / camFarDist;
-	float y1 = ( yBottom - camPosY ) / camFarDist;
-	float y2 = ( yTop - camPosY ) / camFarDist;
-
-	glFrustum ( x1, x2, yBottom, yTop, zNear, camFarDist + 1.0f );
 	*/
+
+	const float x1 = ( xLeft - camPosX )	/ camPosZ * zNear;
+	const float x2 = ( xRight - camPosX )	/ camPosZ * zNear;
+	const float y1 = ( yBottom - camPosY )	/ camPosZ * zNear;
+	const float y2 = ( yTop - camPosY )		/ camPosZ * zNear;
+
+	char str[50];
+	sprintf ( str, "< %.2f, %.2f, %.2f, %.2f >", x1, x2, y1, y2 );
+	std::cout << "< x1, x2, y1, y2 > = " << std::string ( str ) << std::endl;
+
+	// glViewport ( 0, 0, width, height );
+
+	// Viewport Settings
+	const float f = abs ( (x1 - x2) / (y1 - y2) ); 
+
+	if ( f > (float)(width) / (float)(height) ) { glViewport ( 0, 0, width, (float)(width) / f ); }
+	else { glViewport ( 0, 0, height * f, height ); }
+
+	// Camera Projection Settings
+	glMatrixMode	( GL_PROJECTION );
+	glLoadIdentity	();
+	glFrustum ( x1, x2, y1, y2, zNear, camPosZ + 5.0f );
 
 #endif
 
