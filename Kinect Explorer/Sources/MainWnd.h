@@ -1,8 +1,9 @@
-#ifndef _MAINWND_H_
-#define _MAINWND_H_
+#ifndef	_MAINWND_H_
+#define	_MAINWND_H_
 
 #include	<QtCore>
 #include	<QtGui>
+
 #include	<qimage.h>
 #include	<qdebug.h>
 

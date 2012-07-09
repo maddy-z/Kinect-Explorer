@@ -27,6 +27,9 @@
     <ClInclude Include="..\Kinect Explorer\Sources\OpenNiUtility.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ExtrCalibrator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ARTagHelper.cpp">
@@ -44,5 +47,31 @@
     <ClCompile Include="..\Kinect Explorer\Sources\OpenNiUtility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ExtrCalibrator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\dist.txt">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Config\intr.txt">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Config\marker_cfg_a4.txt">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Config\marker_pos_a4.txt">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Config\OpenNiProductConfig.xml">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Config\marker_cfg_a3.txt">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Config\marker_pos_a3.txt">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

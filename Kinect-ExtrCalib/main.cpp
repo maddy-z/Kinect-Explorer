@@ -11,25 +11,31 @@
 #include	"..\Kinect Explorer\Sources\OpenNiUtility.h"
 
 #include	"ARTagHelper.h"
+#include	"ExtrCalibrator.h"
 
 // 
 // MACROS DEFINITIONS
 // 
 
-#define		CONFIG_XML_PATH			"Config\\OpenNiProductConfig.xml"
+#define		CONFIG_XML_PATH				"Config\\OpenNiProductConfig.xml"
 
-#define		ARTAG_CONFIG_FILE		"Config\\marker_cfg_a4.txt"
-#define		ARTAG_POS_FILE			"Config\\marker_pos_a4.txt"
+#define		ARTAG_CONFIG_A3_FILE		"Config\\marker_cfg_a3.txt"
+#define		ARTAG_CONFIG_FILE			"Config\\marker_cfg_a4.txt"
+#define		ARTAG_POS_A3_FILE			"Config\\marker_pos_a3.txt"
+#define		ARTAG_POS_FILE				"Config\\marker_pos_a4.txt"
 
-#define		IMAGE_WIN_NAME			"Color Viewer"
-#define		DEPTH_WIN_NAME			"Depth Viewer"
+#define		KINECT_INTR_FILE			"Config\\intr.txt"
+#define		KINECT_DIST_FILE			"Config\\dist.txt"
 
-#define		INVALID_KEY_VALUE		-1
-#define		ESC_KEY_VALUE			27
+#define		IMAGE_WIN_NAME				"Color Viewer"
+#define		DEPTH_WIN_NAME				"Depth Viewer"
+
+#define		INVALID_KEY_VALUE			-1
+#define		ESC_KEY_VALUE				27
 
 // #define		SHOW_DEPTH_WINDOW
 
-//
+// 
 // FORWARD DECLARATION
 // 
 
@@ -47,8 +53,8 @@ xn::ImageGenerator		g_ImageGen;
 xn::DepthMetaData		g_DepthMD;
 xn::ImageMetaData		g_ImageMD;
 
-const int colorImgWidth	= 640;
-const int colorImgHeight = 480;
+const int colorImgWidth		= 640;
+const int colorImgHeight	= 480;
 
 // 
 // Main Function
@@ -57,11 +63,14 @@ const int colorImgHeight = 480;
 int main ( int argc, char ** argv )
 {
 	// 
-	// Initializing ARTag Related
+	// Initializing Calibration Related
 	// 
 
-	ARTagHelper artagHelper ( colorImgWidth, colorImgHeight, ARTAG_CONFIG_FILE, ARTAG_POS_FILE );
-	// unsigned char * kinectImgBuf = new unsigned char [colorImgWidth * colorImgHeight * 3];
+	// ARTagHelper artagHelper	( colorImgWidth, colorImgHeight, ARTAG_CONFIG_FILE,		ARTAG_POS_FILE );
+	ARTagHelper artagHelper		( colorImgWidth, colorImgHeight, ARTAG_CONFIG_A3_FILE,	ARTAG_POS_A3_FILE );
+
+	ExtrCalibrator extrCalibrator ( 6, KINECT_INTR_FILE, KINECT_DIST_FILE );
+	// unsigned char * kinectImgBuf = new unsigned char[colorImgWidth * colorImgHeight * 3];
 
 	// 
 	// Initializing OpenNI Settings
@@ -136,6 +145,7 @@ int main ( int argc, char ** argv )
 	cv::Mat colorImgMat  ( g_ImageMD.YRes(), g_ImageMD.XRes(), CV_8UC3 );
 
 #define ARTAG_DEBUG
+
 #ifdef ARTAG_DEBUG
 	
 	cv::setMouseCallback ( IMAGE_WIN_NAME, ClickOnMouse, 0 );
@@ -164,12 +174,6 @@ int main ( int argc, char ** argv )
 
 		GlobalUtility::CopyColorRawBufToCvMat8uc3 ( (const XnRGB24Pixel *)(g_ImageMD.Data()), colorImgMat );
 
-		if ( flipColor ) { 
-			cv::cvtColor ( colorImgMat, colorImgMat, CV_RGB2BGR );
-		}
-		
-		cv::imshow ( IMAGE_WIN_NAME, colorImgMat );
-
 #ifdef SHOW_DEPTH_WINDOW
 
 		GlobalUtility::CopyDepthRawBufToCvMat16u  ( (const XnDepthPixel *)(g_DepthMD.Data()), depthImgMat );
@@ -184,13 +188,32 @@ int main ( int argc, char ** argv )
 
 		if ( ctlWndKey == 'f' || ctlWndKey == 'F' ) 
 		{
+			artagHelper.Clear();
+
 			artagHelper.FindMarkerCorners ( (unsigned char *)(g_ImageMD.Data()) );
 			artagHelper.PrintMarkerCornersPos2dInCam ();
+			extrCalibrator.ExtrCalib ( artagHelper );
+
+			std::cout << "\nKinect Extr Matrix:" << std::endl;
+			extrCalibrator.PrintMatrix ( extrCalibrator.GetMatrix ( ExtrCalibrator::EXTR ) );
+
+			std::cout	<< "Reprojection ERROR = " 
+						<< extrCalibrator.ComputeReprojectionErr ( artagHelper ) << std::endl
+						// << extrCalibrator.ComputeReprojectionErr ( artagHelper.m_MarkerCornerPosCam2d, artagHelper.m_MarkerCornerPos3d, 24 ) << std::endl
+						<< "Valid Marker Number = " << artagHelper.GetValidMarkerNumber() << std::endl
+						<< std::endl;
 		}
 		if ( ctlWndKey == 's' || ctlWndKey == 'S' )
 		{
 			flipColor = !flipColor;
 		}
+
+		if ( flipColor ) { 
+			cv::cvtColor ( colorImgMat, colorImgMat, CV_RGB2BGR );
+		}
+
+		artagHelper.DrawMarkersInCameraImage ( colorImgMat );
+		cv::imshow ( IMAGE_WIN_NAME, colorImgMat );
 	}
 
 	g_Context.Release ();
@@ -200,8 +223,8 @@ int main ( int argc, char ** argv )
 
 }
 
-// =========================================
-// =========================================
+// --------------------------------------------------------
+// --------------------------------------------------------
 
 // 
 // Util Functions

@@ -66,7 +66,7 @@ namespace GlobalUtility
 	// Easy Handling Methods for processing Depth Data ( In the form of cv::Mat )
 	// 
 	
-	bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue );
+	bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue, int newValue = 0 );
 
 }
 

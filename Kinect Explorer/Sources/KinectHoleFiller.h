@@ -10,6 +10,11 @@ class KinectHoleFiller
 public:
 	
 	static bool NearestNeighborhoodHoleFilling ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat );
+	static bool NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth );
+
+	static bool DistanceTransform ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth );
+	static bool DistanceTransform2 ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth );
+	
 	static bool FmmInpaintHoleFilling ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat );
 
 };

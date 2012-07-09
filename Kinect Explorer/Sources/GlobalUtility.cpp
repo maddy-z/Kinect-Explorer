@@ -125,7 +125,7 @@ bool CopyCvMat16uTo8u(const cv::Mat & srcCvMat, cv::Mat & destCvMat)
 	const uchar * srcRowPtr = NULL;
 	const unsigned short * srcDataPtr = NULL;
 
-	assert (sizeof(unsigned short *) == 2);
+	assert (sizeof(unsigned short) == 2);
 
 	uchar * destRowPtr = NULL;
 	uchar * destDataPtr = NULL;
@@ -142,7 +142,7 @@ bool CopyCvMat16uTo8u(const cv::Mat & srcCvMat, cv::Mat & destCvMat)
 		destDataPtr = destRowPtr;
 
 		for ( int x = 0; x < nXRes; ++x, ++srcDataPtr, ++destDataPtr ) {
-			(*destDataPtr) = ((double)(*srcDataPtr) - minValue) / (maxValue + 1.0f) * 255;
+			(*destDataPtr) = ((double)(*srcDataPtr) - minValue) / (maxValue - minValue + 1.0f) * 255;
 		}
 	}
 
@@ -667,17 +667,17 @@ bool CopyCvMat8uToQImage(const cv::Mat & srcMat, QImage & destImg)
 	return true;
 }
 
-bool ConvertCvMat16uByThresholdValue(const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue)
+bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue, int newValue )
 {
-	if (srcMat.empty() || destMat.empty()) {
+	if ( srcMat.empty() || destMat.empty() ) {
 		return false;
 	}
 
-	assert (srcMat.size() == destMat.size());
-	assert (srcMat.type() == destMat.type());
-	assert (srcMat.type() == CV_16UC1);
+	assert ( srcMat.size() == destMat.size() );
+	assert ( srcMat.type() == destMat.type() );
+	assert ( srcMat.type() == CV_16UC1 );
 
-	memcpy(destMat.data, srcMat.data, srcMat.step * srcMat.size().height);
+	memcpy ( destMat.data, srcMat.data, srcMat.step * srcMat.size().height );
 
 	const int nXRes = srcMat.size().width;
 	const int nYRes = srcMat.size().height;
@@ -691,15 +691,13 @@ bool ConvertCvMat16uByThresholdValue(const cv::Mat & srcMat, cv::Mat & destMat, 
 	srcRowPtr = srcMat.data;
 	destRowPtr = destMat.data;
 
-	for (int y = 0; y < nYRes; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep) 
-	{
+	for ( int y = 0; y < nYRes; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep ) {
 		srcDataPtr = (const unsigned short *)(srcRowPtr);
 		destDataPtr = (unsigned short *)(destRowPtr);
 
-		for (int x = 0; x < nXRes; ++x, ++srcDataPtr, ++destDataPtr) 
-		{
+		for (int x = 0; x < nXRes; ++x, ++srcDataPtr, ++destDataPtr) {
 			if (*srcDataPtr > thresholdValue) {
-				*destDataPtr = 0;
+				*destDataPtr = newValue;
 			}
 		}
 	}

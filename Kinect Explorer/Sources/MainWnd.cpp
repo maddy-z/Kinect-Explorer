@@ -76,23 +76,23 @@ MainWnd::MainWnd(QWidget * parent, Qt::WFlags flags) :
 	// -------------------
 
 	// QAction Connection Configuration
-	connect(ui.action_AboutQt, SIGNAL(triggered()), this, SLOT(showAboutQtDialog()));
-	connect(ui.action_AboutKinectExplorer, SIGNAL(triggered()), this, SLOT(showAboutKinectExplorerDialog()));
+	connect ( ui.action_AboutQt, SIGNAL(triggered()), this, SLOT(showAboutQtDialog()) );
+	connect ( ui.action_AboutKinectExplorer, SIGNAL(triggered()), this, SLOT(showAboutKinectExplorerDialog()) );
 
-	connect(ui.action_InitFromXML, SIGNAL(triggered()), this, SLOT(initKinectSensorFromXML()));
-	connect(ui.action_InitDirectly, SIGNAL(triggered()), this, SLOT(initKinectSensorDirectly()));
+	connect ( ui.action_InitFromXML, SIGNAL(triggered()), this, SLOT(initKinectSensorFromXML()) );
+	connect ( ui.action_InitDirectly, SIGNAL(triggered()), this, SLOT(initKinectSensorDirectly()) );
 
-	connect(ui.action_StartKinect, SIGNAL(triggered()), this, SLOT(startKinectThread()));
-	connect(ui.action_PauseKinect, SIGNAL(triggered()), this, SLOT(pauseKinectThread()));
-	connect(ui.action_StopKinect, SIGNAL(triggered()), this, SLOT(stopKinectThread()));
+	connect ( ui.action_StartKinect, SIGNAL(triggered()), this, SLOT(startKinectThread()) );
+	connect ( ui.action_PauseKinect, SIGNAL(triggered()), this, SLOT(pauseKinectThread()) );
+	connect ( ui.action_StopKinect, SIGNAL(triggered()), this, SLOT(stopKinectThread()) );
 	
 	// Internal Connection Configuration
-	connect(ui.kinectModeComboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(setRelatedComboBox(const QString &)));
+	connect ( ui.kinectModeComboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(setRelatedComboBox(const QString &)) );
 
 	// Build Connection between UI and underlying-running Kinect Thread
-	connect(&m_kinectThread, SIGNAL(dataNotification()), this, SLOT(showKinectView()));
-	connect(&m_kinectThread, SIGNAL(statusChangedNotification(KinectStreamThread::KinectStatus)), this, SLOT(showKinectStatus(KinectStreamThread::KinectStatus)));
-	connect(&m_kinectThread, SIGNAL(statusChangedNotification(KinectStreamThread::KinectStatus)), this, SLOT(setKinectOperationEnabled(KinectStreamThread::KinectStatus)));
+	connect ( &m_kinectThread, SIGNAL(dataNotification()), this, SLOT(showKinectView()) );
+	connect ( &m_kinectThread, SIGNAL(statusChangedNotification(KinectStreamThread::KinectStatus)), this, SLOT(showKinectStatus(KinectStreamThread::KinectStatus)) );
+	connect ( &m_kinectThread, SIGNAL(statusChangedNotification(KinectStreamThread::KinectStatus)), this, SLOT(setKinectOperationEnabled(KinectStreamThread::KinectStatus)) );
 
 	return;
 }

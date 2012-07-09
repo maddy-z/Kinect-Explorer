@@ -33,7 +33,6 @@ ARTagHelper::ARTagHelper ( int cameraW, int cameraH, const char * fnConfig, cons
 	char str[256];
 
 	fp = fopen ( fnCornerPos, "r" );
-	// fp = fopen ( m_CornerPos, "r" );
 
 	do { fgets ( str, 256, fp ); } while ( str[0] == '#' );
 	sscanf ( str, "%d", &m_MarkerNum );
@@ -42,15 +41,10 @@ ARTagHelper::ARTagHelper ( int cameraW, int cameraH, const char * fnConfig, cons
 	m_MarkerID_LUT = new int[m_MarkerNum];
 	m_MarkerCornerPos3d = ( double(*)[3] )( malloc ( m_MarkerNum * 4 * 3 * sizeof ( double ) ) );
 	m_MarkerCornerPosCam2d = ( double(*)[2] )( malloc ( m_MarkerNum * 4 * 2 * sizeof ( double ) ) );
-	// m_MarkerCornerPosPro2d = ( double(*)[2] )( malloc ( m_MarkerNum * 4 * 2 * sizeof ( double ) ) );
-	
 	m_ValidFlagCam = new bool[m_MarkerNum];
-	// m_ValidFlagPro = new bool[m_MarkerNum];
 
-	for ( int i = 0; i < m_MarkerNum; ++i )
-	{
+	for ( int i = 0; i < m_MarkerNum; ++i ) {
 		m_ValidFlagCam[i] = false;
-		// m_ValidFlagPro[i] = false;
 	}
 
 	for ( int id = 0; id < m_MarkerNum; ++id )
@@ -70,13 +64,9 @@ ARTagHelper::ARTagHelper ( int cameraW, int cameraH, const char * fnConfig, cons
 	init_artag ( m_CameraWidth, m_CameraHeight, 3 );
 	
 	int res = load_array_file ( (char *)(fnConfig) );
-	// int res = load_array_file ( m_ConfigFile );
 	if ( res == -1 )
 	{
 		printf( "%c is not found\n", fnConfig );
-		// printf( "%c is not found\n", m_ConfigFile );
-		
-		// system("pause");
 		return;
 	}
 
@@ -94,21 +84,13 @@ ARTagHelper::~ARTagHelper()
 {
 	if ( m_MarkerID_LUT ) { delete [] m_MarkerID_LUT; }
 
-	if ( m_MarkerCornerPos3d ) { free(m_MarkerCornerPos3d); }
-	if ( m_MarkerCornerPosCam2d ) { free(m_MarkerCornerPosCam2d); }
-	// if ( m_MarkerCornerPosPro2d ) { free(m_MarkerCornerPosPro2d); }
-
-	/*	
-	if (m_MarkerCornerPos3d) { delete [] m_MarkerCornerPos3d; }
-	if (m_MarkerCornerPosCam2d) { delete [] m_MarkerCornerPosCam2d; }
-	if (m_MarkerCornerPosPro2d) { delete [] m_MarkerCornerPosPro2d; }
-	*/
+	if ( m_MarkerCornerPos3d ) { free ( m_MarkerCornerPos3d ); }
+	if ( m_MarkerCornerPosCam2d ) { free ( m_MarkerCornerPosCam2d ); }
 
 	if ( m_ValidFlagCam ) { delete [] m_ValidFlagCam; }
-	// if ( m_ValidFlagPro ) { delete [] m_ValidFlagPro; }
 }
 
-void ARTagHelper::FindMarkerCorners( unsigned char * image )
+void ARTagHelper::FindMarkerCorners ( unsigned char * image )
 {
 	std::cout << "Start:\tvoid ARTagHelper::FindMarkerCorners ( unsigned char * )" << std::endl;
 	std::cout << "Marker Number = " << m_MarkerNum << std::endl;
@@ -118,10 +100,9 @@ void ARTagHelper::FindMarkerCorners( unsigned char * image )
 	
 	for ( int i = 0; i < m_MarkerNum; ++i )
 	{
-		if ( artag_is_object_found( m_MarkerID_LUT[i] ) )
+		if ( artag_is_object_found ( m_MarkerID_LUT[i] ) )
 		{
 			m_ValidFlagCam[i] = true;
-			nFound++;
 			
 			// All the corners of the marker should be visible from the camera.
 			for ( int j = 0; j < 4; j++ )
@@ -129,8 +110,11 @@ void ARTagHelper::FindMarkerCorners( unsigned char * image )
 				float camX, camY;
 				
 				artag_project_point( m_MarkerID_LUT[i], 
-									m_MarkerCornerPos3d[i*4+j][0], m_MarkerCornerPos3d[i*4+j][1], m_MarkerCornerPos3d[i*4+j][2], 
-									&camX, &camY );
+									 m_MarkerCornerPos3d[i*4+j][0], 
+									 m_MarkerCornerPos3d[i*4+j][1], 
+									 m_MarkerCornerPos3d[i*4+j][2], 
+									 &camX, 
+									 &camY );
 				
 				m_MarkerCornerPosCam2d[i*4+j][0] = camX;
 				m_MarkerCornerPosCam2d[i*4+j][1] = camY;
@@ -138,6 +122,10 @@ void ARTagHelper::FindMarkerCorners( unsigned char * image )
 				if ( camX < 0.0 || camX >= m_CameraWidth || camY < 0.0 || camY >= m_CameraHeight ) {
 					m_ValidFlagCam[i] = false;
 				}
+			}
+
+			if ( m_ValidFlagCam[i] == true ) {
+				nFound++;
 			}
 		}
 	}
@@ -185,7 +173,6 @@ void ARTagHelper::PrintMarkerCornersPos3d() const
 	}
 }
 
-
 //void ARTagHelper::GetMarkerCornerPos2dInProjector ( GrayCode * gc )
 //{
 //	for ( int i = 0; i < m_MarkerNum; ++i )
@@ -231,14 +218,32 @@ void ARTagHelper::DrawMarkersInCameraImage ( float pixZoomX, float pixZoomY )
 }
 
 void 
-ARTagHelper::GetValidFlagArray(int deviceType, const bool *& validArray, int & markerNum) const 
+ARTagHelper::DrawMarkersInCameraImage ( cv::Mat & img )
+{
+	for ( int i = 0; i < m_MarkerNum; ++i )
+	{
+		if ( m_ValidFlagCam[i] == true ) 
+		{
+			for ( int j = 0; j < 4; j++ )
+			{
+				float camX[2], camY[2];
+				
+				camX[0] = m_MarkerCornerPosCam2d[i*4+j][0];
+				camY[0] = m_MarkerCornerPosCam2d[i*4+j][1];
+				camX[1] = m_MarkerCornerPosCam2d[i*4+(j+1)%4][0];
+				camY[1] = m_MarkerCornerPosCam2d[i*4+(j+1)%4][1];
+
+				cv::line ( img, cv::Point2f ( camX[0], camY[0] ), cv::Point2f ( camX[1], camY[1] ), CV_RGB ( 255, 0, 0 ) );  
+			}
+		}
+	}
+
+	return;
+}
+
+void 
+ARTagHelper::GetValidFlagArray ( const bool *& validArray, int & markerNum ) const 
 {
 	markerNum = m_MarkerNum;
-		
-	if ( deviceType == CAMERA ) { 
-		validArray = m_ValidFlagCam; 
-	}
-	else if ( deviceType == PROJECTOR ) { 
-		// validArray = m_ValidFlagPro; 
-	}
+	validArray = m_ValidFlagCam; 
 }

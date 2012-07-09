@@ -3,20 +3,21 @@
 #include <XnOpenNI.h>
 #include <XnCppWrapper.h>
 
-#include "KinectHoleFiller.h"
-
 #include <qimage.h>
 #include <qdebug.h>
 
-bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMat, cv::Mat & destDepthMat)
+#include "KinectHoleFiller.h"
+
+bool 
+KinectHoleFiller::NearestNeighborhoodHoleFilling  ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat )
 {
 	qDebug() << "Entering:\tbool KinectHoleFiller::NearestNeighborHoleFilling()";
 
-	assert (srcDepthMat.size() == destDepthMat.size());
-	assert (srcDepthMat.type() == destDepthMat.type());
-	assert (srcDepthMat.type() == CV_16UC1);
+	assert ( srcDepthMat.size() == destDepthMat.size() );
+	assert ( srcDepthMat.type() == destDepthMat.type() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
 
-	if (srcDepthMat.empty() || destDepthMat.empty()) {
+	if ( srcDepthMat.empty() || destDepthMat.empty() ) {
 		qDebug() << "Leaving:\tbool KinectHoleFiller::NearestNeighborHoleFilling()";
 		return false;
 	}
@@ -46,7 +47,7 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 	destDataPtr = (XnDepthPixel *)(destRowPtr);
 	distDataPtr = distRowPtr;
 
-	if (*srcDataPtr) {
+	if ( *srcDataPtr ) {
 		*distDataPtr = 0;
 		*destDataPtr = *srcDataPtr;
 	}
@@ -55,7 +56,7 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 		*destDataPtr = 0;
 	}
 
-	for (int x = 1; x < depthWidth; ++x) 
+	for ( int x = 1; x < depthWidth; ++x ) 
 	{
 		XnDepthPixel tmp = srcDataPtr[x];
 		
@@ -79,7 +80,7 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 	destRowPtr += destRowStep;
 	distRowPtr += depthWidth;
 
-	for (int y = 1; y < depthHeight; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep, distRowPtr += depthWidth) 
+	for ( int y = 1; y < depthHeight; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep, distRowPtr += depthWidth ) 
 	{
 		srcDataPtr = (const XnDepthPixel *)(srcRowPtr);
 		destDataPtr = (XnDepthPixel *)(destRowPtr);
@@ -88,11 +89,13 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 		// 
 		// x = 0
 		// 
+
 		if (*srcDataPtr) {
 			*distDataPtr = 0;
 			*destDataPtr = *srcDataPtr;
 		}
-		else {
+		else 
+		{
 			adj[0] = *(distDataPtr-depthWidth);
 			adj[1] = *(distDataPtr-depthWidth+1);
 
@@ -138,10 +141,10 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 				
 				switch ( min_i ) 
 				{
-				case 0: *destDataPtr = *(destDataPtr-1); break;
-				case 1: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1)-destRowStep); break;
-				case 2: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr)-destRowStep); break;
-				case 3: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr+1)-destRowStep); break;
+				case 0:		*destDataPtr = *(destDataPtr-1); break;
+				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1)-destRowStep); break;
+				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr)-destRowStep); break;
+				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr+1)-destRowStep); break;
 				}
 			}
 		}
@@ -149,11 +152,13 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 		// 
 		// x = depthWidth - 1
 		// 
-		if (*srcDataPtr) {
+
+		if ( *srcDataPtr ) {
 			*distDataPtr = 0;
 			*destDataPtr = *srcDataPtr;
 		}
-		else {
+		else 
+		{
 			adj[0] = *(distDataPtr-1);
 			adj[1] = *(distDataPtr-depthWidth-1);
 			adj[2] = *(distDataPtr-depthWidth);
@@ -172,9 +177,9 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 			
 			switch (min_i) 
 			{
-			case 0: *destDataPtr = *(destDataPtr-1); break;
-			case 1: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1)-destRowStep); break;
-			case 2: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr)-destRowStep); break;
+			case 0:		*destDataPtr = *(destDataPtr-1); break;
+			case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1)-destRowStep); break;
+			case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr)-destRowStep); break;
 			}
 		}
 	}
@@ -215,7 +220,7 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 	destRowPtr -= destRowStep;
 	distRowPtr -= depthWidth;
 
-	for (int y = depthHeight - 2; y >= 0; --y, destRowPtr -= destRowStep, distRowPtr -= depthWidth) 
+	for ( int y = depthHeight - 2; y >= 0; --y, destRowPtr -= destRowStep, distRowPtr -= depthWidth ) 
 	{
 		destDataPtr = (XnDepthPixel *)(destRowPtr);
 		distDataPtr = distRowPtr;
@@ -224,7 +229,7 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 		// x = depthWidth - 1
 		// 
 		
-		if (*distDataPtr > 0)
+		if ( *distDataPtr > 0 )
 		// else 
 		{
 			adj[0] = *(distDataPtr+depthWidth);
@@ -235,14 +240,14 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 			if (adj[0] < adj[1]) { min = adj[0]; min_i = 0; }
 			else { min = adj[1]; min_i = 1; }
 
-			if (*distDataPtr >= min + 1) 
+			if ( *distDataPtr >= min + 1 ) 
 			{
 				*distDataPtr = min + 1;
 
 				switch (min_i) 
 				{
-				case 0: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep); break;
-				case 1: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1) + destRowStep); break;
+				case 0:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);		break;
+				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1) + destRowStep);	break;
 				}
 			}
 		}
@@ -337,6 +342,568 @@ bool KinectHoleFiller::NearestNeighborhoodHoleFilling(const cv::Mat & srcDepthMa
 	delete [] distMap;
 
 	qDebug() << "Leaving:\tbool KinectHoleFiller::NearestNeighborHoleFilling()";
+
+	return true;
+}
+
+bool 
+KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth )
+{
+	assert ( srcDepthMat.size() == destDepthMat.size() );
+	assert ( srcDepthMat.type() == destDepthMat.type() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	if ( srcDepthMat.empty() || destDepthMat.empty() ) {
+		return false;
+	}
+
+	int depthWidth = srcDepthMat.size().width, depthHeight = srcDepthMat.size().height;
+	int srcRowStep = srcDepthMat.step, destRowStep = destDepthMat.step;
+
+	const uchar * srcRowPtr = NULL;
+	const XnDepthPixel * srcDataPtr = NULL;
+	uchar * destRowPtr = NULL;
+	XnDepthPixel * destDataPtr = NULL;
+
+	// 
+	// Create Distance Map
+	// 
+	
+	int adj[4];
+	int * distRowPtr = NULL, * distDataPtr = NULL;
+	int * const distMap = new int[depthHeight * depthWidth];
+	
+	memset ( distMap, 0, depthHeight * depthWidth * sizeof (int) );
+
+	// 
+	// First Scan
+	// 
+	
+	srcRowPtr = srcDepthMat.data + srcRowStep;
+	destRowPtr = destDepthMat.data + destRowStep;
+	distRowPtr = distMap + depthWidth;
+
+	for ( int y = 1; y < depthHeight - 1; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep, distRowPtr += depthWidth ) 
+	{
+		srcDataPtr = (const XnDepthPixel *)(srcRowPtr) + 1;
+		destDataPtr = (XnDepthPixel *)(destRowPtr) + 1;
+		distDataPtr = (distRowPtr) + 1;
+
+		for ( int x = 1; x < depthWidth - 1; ++x, ++srcDataPtr, ++destDataPtr, ++distDataPtr ) 
+		{
+			if ( (*srcDataPtr) && (*srcDataPtr) <= maxDepth ) {
+				*distDataPtr = 0;
+				*destDataPtr = *srcDataPtr;
+			}
+			else if ( (*srcDataPtr) == 0 ) 
+			{
+				adj[0] = *(distDataPtr - 1) + 1;
+				adj[1] = *(distDataPtr - depthWidth - 1) + 2;
+				adj[2] = *(distDataPtr - depthWidth) + 1;
+				adj[3] = *(distDataPtr - depthWidth + 1) + 2;
+			
+				int min = adj[0];
+				int min_i = 0;
+				for ( int k = 1; k < 4; ++k ) {
+					if ( adj[k] < min ) {
+						min = adj[k]; min_i = k;
+					}
+				}
+				
+				*distDataPtr = min;
+				
+				switch ( min_i ) 
+				{
+				case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr - 1);								break;
+				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) - destRowStep);		break;
+				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) - destRowStep);			break;
+				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) - destRowStep);		break;
+				}
+			}
+		}
+	}
+
+	// 
+	// Second Scan
+	// 
+
+	destRowPtr = destDepthMat.data + ( depthHeight - 1 ) * ( destRowStep ) - 1;
+	distRowPtr = distMap + ( depthHeight - 1 ) * ( depthWidth ) - 1;
+
+	for ( int y = depthHeight - 2; y >= 1; --y, destRowPtr -= destRowStep, distRowPtr -= depthWidth ) 
+	{
+		destDataPtr = (XnDepthPixel *)(destRowPtr) - 1;
+		distDataPtr = distRowPtr - 1;
+
+		for ( int x = depthWidth - 2; x >= 1; --x, --distDataPtr, --destDataPtr ) 
+		{
+			if ( *distDataPtr > 0 )
+			{
+				adj[0] = *(distDataPtr + 1) + 1;
+				adj[1] = *(distDataPtr + depthWidth + 1) + 2;
+				adj[2] = *(distDataPtr + depthWidth) + 1;
+				adj[3] = *(distDataPtr + depthWidth - 1) + 2;
+
+				int min = adj[0];
+				int min_i = 0;
+				for ( int k = 1; k < 4; ++k ) 
+				{
+					if ( adj[k] < min ) {
+						min = adj[k];
+						min_i = k;
+					}
+				}
+
+				if ( *distDataPtr > min ) 
+				{
+					*distDataPtr = min;
+				
+					switch ( min_i ) 
+					{
+					case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr + 1);								break;
+					case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) + destRowStep);		break;
+					case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);			break;
+					case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) + destRowStep);		break;
+					}
+				}
+			}
+		}
+	}
+
+	delete [] distMap;
+
+	return true;
+}
+
+bool 
+KinectHoleFiller::DistanceTransform ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth )
+{
+	assert ( srcDepthMat.size() == destDepthMat.size() );
+	assert ( srcDepthMat.type() == destDepthMat.type() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	if ( srcDepthMat.empty() || destDepthMat.empty() ) {
+		return false;
+	}
+
+	int depthWidth = srcDepthMat.size().width;
+	int depthHeight = srcDepthMat.size().height;
+	int srcRowStep = srcDepthMat.step;
+	int destRowStep = destDepthMat.step;
+
+	const uchar * srcRowPtr = NULL;
+	const XnDepthPixel * srcDataPtr = NULL;
+	uchar * destRowPtr = NULL;
+	XnDepthPixel * destDataPtr = NULL;
+
+	// 
+	// Create Distance Map
+	// 
+
+	int adj[4];
+	int * distRowPtr = NULL, * distDataPtr = NULL;
+	int * const distMap = new int[depthHeight * depthWidth];
+	
+	memset ( distMap, 0, depthHeight * depthWidth );
+
+	// 
+	// First Scan
+	// 
+	
+	srcRowPtr = srcDepthMat.data;
+	distRowPtr = distMap;
+
+	srcDataPtr = (const XnDepthPixel *)(srcRowPtr);
+	distDataPtr = distRowPtr;
+
+	if ( *srcDataPtr && *srcDataPtr <= maxDepth ) {
+		*distDataPtr = 0;
+	}
+	else if ( *srcDataPtr == 0 ) {
+		*distDataPtr = depthWidth + 1;
+	}
+
+	for ( int x = 1; x < depthWidth; ++x ) 
+	{
+		XnDepthPixel tmp = srcDataPtr[x];
+		
+		if ( tmp && tmp <= maxDepth ) {
+			distDataPtr[x] = 0;
+		}
+		else if ( tmp == 0 ) 
+		{
+			if ( distDataPtr[x-1] + 1 < depthWidth + 1 ) {
+				distDataPtr[x] = distDataPtr[x-1] + 1;
+			}
+			else {
+				distDataPtr[x] = depthWidth + 1;
+			}
+		}
+	}
+	srcRowPtr += srcRowStep;
+	distRowPtr += depthWidth;
+
+	for ( int y = 1; y < depthHeight; ++y, srcRowPtr += srcRowStep, distRowPtr += depthWidth ) 
+	{
+		srcDataPtr = (const XnDepthPixel *)(srcRowPtr);
+		distDataPtr = distRowPtr;
+
+		// 
+		// x = 0
+		// 
+
+		if ( *srcDataPtr && *srcDataPtr <= maxDepth ) {
+			*distDataPtr = 0;
+		}
+		else if ( *srcDataPtr == 0 )
+		{
+			adj[0] = *(distDataPtr - depthWidth);
+			adj[1] = *(distDataPtr - depthWidth + 1);
+
+			if ( adj[0] + 1 <= adj[1] + 2 ) { 
+				*distDataPtr = adj[0] + 1;
+			}
+			else {
+				*distDataPtr = adj[1] + 2;
+			}
+		}
+		++srcDataPtr;
+		++distDataPtr;
+
+		for ( int x = 1; x < depthWidth - 1; ++x, ++srcDataPtr, ++distDataPtr ) 
+		{
+			if ( *srcDataPtr && *srcDataPtr <= maxDepth ) 
+			{
+				*distDataPtr = 0;
+			}
+			else if ( *srcDataPtr == 0 )
+			{
+				// 
+				// 8-adjant Points
+				// 
+
+				adj[0] = *(distDataPtr - 1) + 1;
+				adj[1] = *(distDataPtr - depthWidth - 1) + 2;
+				adj[2] = *(distDataPtr - depthWidth) + 1;
+				adj[3] = *(distDataPtr - depthWidth + 1) + 2;
+
+				int min = adj[0];
+				int min_i = 0;				
+				for (int k = 1; k < 4; ++k) 
+				{
+					if (adj[k] < min) {
+						min = adj[k];
+						min_i = k;
+					}
+				}
+
+				*distDataPtr = min;
+			}
+		}
+
+		// 
+		// x = depthWidth - 1
+		// 
+
+		if ( *srcDataPtr && *srcDataPtr <= maxDepth ) {
+			*distDataPtr = 0;
+		}
+		else if ( *srcDataPtr == 0 )
+		{
+			adj[0] = *(distDataPtr - 1) + 1;
+			adj[1] = *(distDataPtr - depthWidth - 1) + 2;
+			adj[2] = *(distDataPtr - depthWidth) + 1;
+
+			int min = adj[0];
+			int min_i = 0;
+			for (int k = 1; k < 3; ++k) 
+			{
+				if (adj[k] < min) {
+					min = adj[k];
+					min_i = k;
+				}
+			}
+
+			*distDataPtr = min;
+		}
+	}
+
+	// 
+	// Second Scan
+	// 
+
+	distRowPtr = distMap + depthHeight * depthWidth - 1;
+	distDataPtr = distRowPtr;
+
+	if (*distDataPtr > depthWidth + 1) 
+	{
+		*distDataPtr = depthWidth + 1;
+	}
+	--distDataPtr;
+
+	for ( int x = depthWidth - 2; x >= 0; --x, --distDataPtr ) 
+	{
+		if (*distDataPtr > *(distDataPtr+1) + 1) 
+		{
+			*distDataPtr = *(distDataPtr+1) + 1;
+		}
+
+		if (*distDataPtr > depthWidth + 1) {
+			*distDataPtr = depthWidth + 1;
+		}
+	}
+	distRowPtr -= depthWidth;
+
+	for ( int y = depthHeight - 2; y >= 0; --y, distRowPtr -= depthWidth ) 
+	{
+		// destDataPtr = (XnDepthPixel *)(destRowPtr);
+		distDataPtr = distRowPtr;
+
+		// 
+		// x = depthWidth - 1
+		// 
+		
+		if ( *distDataPtr > 0 )
+		{
+			adj[0] = *( distDataPtr + depthWidth );
+			adj[1] = *( distDataPtr + depthWidth - 1 );
+
+			int min, min_i;
+
+			if ( adj[0] + 1 < adj[1] + 2 ) { min = adj[0] + 1; min_i = 0; }
+			else { min = adj[1] + 2; min_i = 1; }
+
+			if ( *distDataPtr >= min ) 
+			{
+				*distDataPtr = min;
+			}
+		}
+		--distDataPtr;
+
+		for ( int x = depthWidth - 2; x >= 1; --x, --distDataPtr ) 
+		{			
+			if ( *distDataPtr > 0 )
+			{
+				// 
+				// 8-adjant Points
+				// 
+				
+				adj[0] = *(distDataPtr + 1) + 1;
+				adj[1] = *(distDataPtr + depthWidth + 1) + 2;
+				adj[2] = *(distDataPtr + depthWidth) + 1;
+				adj[3] = *(distDataPtr + depthWidth - 1) + 2;
+
+				int min = adj[0];
+				int min_i = 0;
+				for ( int k = 1; k < 4; ++k ) 
+				{
+					if (adj[k] < min) {
+						min = adj[k];
+						min_i = k;
+					}
+				}
+
+				if ( *distDataPtr > min ) {
+					*distDataPtr = min;
+				}
+			}
+		}
+
+		// 
+		// x = 0
+		// 
+		
+		if ( *distDataPtr > 0 ) 
+		{ 
+			adj[0] = *(distDataPtr + 1) + 1;
+			adj[1] = *(distDataPtr + depthWidth + 1) + 2;
+			adj[2] = *(distDataPtr + depthWidth) + 1;
+
+			int min = adj[0];
+			int min_i = 0;
+			for ( int k = 1; k < 3; ++k ) 
+			{
+				if (adj[k] < min) {
+					min = adj[k];
+					min_i = k;
+				}
+			}
+
+			if ( *distDataPtr > min ) 
+			{ 
+				*distDataPtr = min;
+			}
+		}
+	}
+
+	// 
+	// Copy Distance Transform to cv::Mat
+	// 
+
+	destRowPtr = destDepthMat.data;
+	distRowPtr = distMap;
+
+	destDataPtr = (XnDepthPixel *)(destRowPtr);
+	distDataPtr = distRowPtr;
+
+	int minDist = INT_MAX, maxDist = INT_MIN;
+	for ( int i = 0; i < depthHeight; ++i, distRowPtr += depthWidth ) 
+	{
+		distDataPtr = distRowPtr;
+
+		for ( int j = 0; j < depthWidth; ++j, ++distDataPtr ) {
+			if ( *distDataPtr < minDist ) { minDist = *distDataPtr; }
+			if ( *distDataPtr > maxDist ) { maxDist = *distDataPtr; }
+		}
+	}
+
+	destRowPtr = destDepthMat.data;
+	distRowPtr = distMap;
+
+	destDataPtr = (XnDepthPixel *)(destRowPtr);
+	distDataPtr = distRowPtr;
+
+	double delta = maxDist - minDist;
+	for ( int i = 0; i < depthHeight; ++i, distRowPtr += depthWidth, destRowPtr += destRowStep ) 
+	{
+		distDataPtr = distRowPtr;
+		destDataPtr = (XnDepthPixel *)(destRowPtr);
+
+		for ( int j = 0; j < depthWidth; ++j, ++distDataPtr, ++destDataPtr ) {
+			*destDataPtr = (double)((*distDataPtr) - minDist) / (delta + 1.0f) * 65535.0f;
+		}
+	}
+
+	delete [] distMap;
+
+	return true;
+}
+
+bool 
+KinectHoleFiller::DistanceTransform2 ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth )
+{
+	assert ( srcDepthMat.size() == destDepthMat.size() );
+	assert ( srcDepthMat.type() == destDepthMat.type() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	if ( srcDepthMat.empty() || destDepthMat.empty() ) {
+		return false;
+	}
+
+	int depthWidth = srcDepthMat.size().width, depthHeight = srcDepthMat.size().height;
+	int srcRowStep = srcDepthMat.step, destRowStep = destDepthMat.step;
+
+	const uchar * srcRowPtr = NULL;
+	const XnDepthPixel * srcDataPtr = NULL;
+	uchar * destRowPtr = NULL;
+	XnDepthPixel * destDataPtr = NULL;
+
+	// 
+	// Create Distance Map
+	// 
+	
+	int adj[4];
+	int * distRowPtr = NULL, * distDataPtr = NULL;
+	int * const distMap = new int[depthHeight * depthWidth];
+	
+	memset ( distMap, 0, depthHeight * depthWidth * sizeof (int) );
+
+	// 
+	// First Scan
+	// 
+	
+	srcRowPtr = srcDepthMat.data + srcRowStep;
+	distRowPtr = distMap + depthWidth;
+
+	for ( int y = 1; y < depthHeight - 1; ++y, srcRowPtr += srcRowStep, distRowPtr += depthWidth ) 
+	{
+		srcDataPtr = (const XnDepthPixel *)(srcRowPtr) + 1;
+		distDataPtr = distRowPtr + 1;
+
+		for ( int x = 1; x < depthWidth - 1; ++x, ++srcDataPtr, ++distDataPtr ) 
+		{
+			if ( *srcDataPtr && *srcDataPtr <= maxDepth ) {
+				*distDataPtr = 0;
+			}
+			else if ( *srcDataPtr == 0 ) 
+			{
+				adj[0] = *(distDataPtr - 1) + 1;
+				adj[1] = *(distDataPtr - depthWidth - 1) + 2;
+				adj[2] = *(distDataPtr - depthWidth) + 1;
+				adj[3] = *(distDataPtr - depthWidth + 1) + 2;
+			
+				*distDataPtr = adj[0];
+				for ( int k = 1; k < 4; ++k ) {
+					if ( adj[k] < *distDataPtr ) { *distDataPtr = adj[k]; }
+				}
+			}
+		}
+	}
+
+	// 
+	// Second Scan
+	// 
+
+	distRowPtr = distMap + ( depthHeight - 1 ) * depthWidth - 1;
+	distDataPtr = distRowPtr - 1;
+
+	for ( int y = depthHeight - 2; y >= 1; --y, distRowPtr -= depthWidth ) 
+	{
+		distDataPtr = distRowPtr - 1;
+
+		for ( int x = depthWidth - 2; x >= 1; --x, --distDataPtr ) 
+		{			
+			if ( *distDataPtr > 0 )
+			{
+				adj[0] = *(distDataPtr + 1) + 1;
+				adj[1] = *(distDataPtr + depthWidth + 1) + 2;
+				adj[2] = *(distDataPtr + depthWidth) + 1;
+				adj[3] = *(distDataPtr + depthWidth - 1) + 2;
+
+				int min = adj[0];
+				for ( int k = 1; k < 4; ++k ) {
+					if ( adj[k] < min ) { min = adj[k]; }
+				}
+
+				if ( *distDataPtr > min ) { *distDataPtr = min; }
+			}
+		}
+	}
+
+	// 
+	// Copy Distance Transform to cv::Mat
+	// 
+
+	distRowPtr = distMap;
+	distDataPtr = distRowPtr;
+
+	int minDist = INT_MAX, maxDist = INT_MIN;
+	for ( int i = 0; i < depthHeight; ++i, distRowPtr += depthWidth ) 
+	{
+		distDataPtr = distRowPtr;
+
+		for ( int j = 0; j < depthWidth; ++j, ++distDataPtr ) {
+			if ( *distDataPtr < minDist ) { minDist = *distDataPtr; }
+			if ( *distDataPtr > maxDist ) { maxDist = *distDataPtr; }
+		}
+	}
+
+	destRowPtr = destDepthMat.data;
+	distRowPtr = distMap;
+
+	double delta = maxDist - minDist;
+
+	for ( int i = 0; i < depthHeight; ++i, distRowPtr += depthWidth, destRowPtr += destRowStep ) 
+	{
+		distDataPtr = distRowPtr;
+		destDataPtr = (XnDepthPixel *)(destRowPtr);
+
+		for ( int j = 0; j < depthWidth; ++j, ++distDataPtr, ++destDataPtr ) {
+			*destDataPtr = (double)((*distDataPtr) - minDist) / (delta + 1.0f) * 65535.0f;
+		}
+	}
+
+	delete [] distMap;
 
 	return true;
 }

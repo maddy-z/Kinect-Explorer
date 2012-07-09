@@ -24,17 +24,17 @@
 // -------------------------------
 
 bool SimpleHeadTracking::
-	 SimpleDepthHandlingFunc(QImage & destImgBuff, const xn::DepthGenerator & depthGen)
+	 SimpleDepthHandlingFunc ( QImage & destImgBuff, const xn::DepthGenerator & depthGen )
 {
 	// 
-	// Invalid Depth Stream Input, then return an empty QImage
+	// Invalid Depth Stream Input, Then Return an Empty QImage
 	// 
 
 	xn::DepthMetaData depthMD;
-	depthGen.GetMetaData(depthMD);
+	depthGen.GetMetaData ( depthMD );
 
 	const XnDepthPixel * srcDepthData = depthMD.Data();
-	if (srcDepthData == NULL) {
+	if ( srcDepthData == NULL ) {
 		return false;
 	}
 
@@ -42,111 +42,70 @@ bool SimpleHeadTracking::
 	int nXRes = depthMD.XRes(), nYRes = depthMD.YRes();
 
 	// Step 0:	Preparation Work -- Copy Depth Raw Data to cv::Mat
-	cv::Mat depthMat(nYRes, nXRes, CV_16UC1);
-	result = GlobalUtility::CopyDepthRawBufToCvMat16u(srcDepthData, depthMat);
+	cv::Mat depthMat ( nYRes, nXRes, CV_16UC1 );
+	result = GlobalUtility::CopyDepthRawBufToCvMat16u ( srcDepthData, depthMat );
 
-	// Step 1:	Fill Depth Shadow
-	result = KinectHoleFiller::NearestNeighborhoodHoleFilling(depthMat, depthMat);
+	// cv::Mat depthDTMat ( nYRes, nXRes, CV_8UC1 );
+	// result = KinectHoleFiller::DistanceTransform ( depthMat, depthMat, 10001 );
+	// result = KinectHoleFiller::DistanceTransform2 ( depthMat, depthMat, 10001 );
+	// GlobalUtility::CopyCvMat16uTo8u ( depthMat, depthDTMat );
+	
+	// cv::namedWindow ( "DT Image", 1 );
+	// cv::imshow ( "DT Image", depthDTMat );
+	// cv::waitKey(15);
 
-	// Step 2:	Filter Depth Data
-	cv::medianBlur(depthMat, depthMat, 3);
+	// Step 1:	Filter Depth Data By Threshold Value
+	const int thresholdDepthValue = 1500.0f, newDepthValue = 2000;
+	result = GlobalUtility::ConvertCvMat16uByThresholdValue ( depthMat, depthMat, thresholdDepthValue, newDepthValue );
+
+	// Step 2:	Fill Depth Shadow
+	result = KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( depthMat, depthMat, OPENNI_MAX_DEPTH );
+
+	// Step 3:	Filter Depth Data
+	cv::medianBlur ( depthMat, depthMat, 3 );
 
 	// Step 3:	Calculate Local Minimum Depth Histogram Value
-	int minDepth, minHistValue;
-	OpenCvUtility::CalcMinimumOfDepthHistogram(depthMat, minDepth, minHistValue);
+	// int minDepth, minHistValue;
+	// OpenCvUtility::CalcMinimumOfDepthHistogram ( depthMat, minDepth, minHistValue, 5000 );
 
 	// Step 4:	Threshold cv::Mat By Threshold Value
-	if (minDepth >= 0) {
-		GlobalUtility::ConvertCvMat16uByThresholdValue(depthMat, depthMat, minDepth);
-	}
+	// minDepth = 5000;
+	// if ( minDepth >= 0 ) {
+	// 	GlobalUtility::ConvertCvMat16uByThresholdValue ( depthMat, depthMat, minDepth );
+	// }
 
-	// Step 5:	Convert Depth cv::Mat to QImage 
-	result = GlobalUtility::ConvertDepthCvMat16uToGrayQImage(depthMat, destImgBuff);
+	// Step 4:	Convert Depth cv::Mat to QImage 
+	result = GlobalUtility::ConvertDepthCvMat16uToGrayQImage ( depthMat, destImgBuff );
 	
-	static QRgb whiteColor = qRgb(255, 255, 255);
-	static QRgb blackColor = qRgb(0, 0, 0);
+	static QRgb whiteColor = qRgb ( 255, 255, 255 );
+	static QRgb blackColor = qRgb ( 0, 0, 0 );
 
-	// Step 6:	Find and Draw Rough Head Coordinates in Preprocessed Range Data
+	// Step 5:	Find and Draw Rough Head Coordinates in Preprocessed Range Data
 	XnDepthPixel * destDepthData = new XnDepthPixel[nXRes * nYRes];
-	result = GlobalUtility::CopyCvMat16uToDepthRawBuf(depthMat, destDepthData);
+	result = GlobalUtility::CopyCvMat16uToDepthRawBuf ( depthMat, destDepthData );
 
 	int rIndex, cIndex;
-	if ( SimpleHeadTracking::FindHeadCoordinate(destDepthData, nXRes, nYRes, rIndex, cIndex, depthGen) ) 
+	if ( SimpleHeadTracking::FindHeadCoordinate ( destDepthData, nXRes, nYRes, rIndex, cIndex, depthGen ) ) 
 	{	
 		for (int i = 0; i < 25; ++i) 
 		{
-			if (rIndex + i < nYRes) { destImgBuff.setPixel(cIndex, rIndex + i, blackColor); }
-			if (rIndex - i >= 0) { destImgBuff.setPixel(cIndex, rIndex - i, blackColor); }
-			if (cIndex + i < nXRes) { destImgBuff.setPixel(cIndex + i, rIndex, blackColor); }
-			if (cIndex - i >= 0) { destImgBuff.setPixel(cIndex - i, rIndex, blackColor); }
-
-			/*
-			if (rIndex + i < nYRes) { destImgBuff.setPixel(cIndex, rIndex + i, whiteColor); }
-			if (rIndex - i >= 0) { destImgBuff.setPixel(cIndex, rIndex - i, whiteColor); }
-			if (cIndex + i < nXRes) { destImgBuff.setPixel(cIndex + i, rIndex, whiteColor); }
-			if (cIndex - i >= 0) { destImgBuff.setPixel(cIndex - i, rIndex, whiteColor); }
-			*/
+			if ( rIndex + i < nYRes )	{ destImgBuff.setPixel ( cIndex, rIndex + i, blackColor ); }
+			if ( rIndex - i >= 0 )		{ destImgBuff.setPixel ( cIndex, rIndex - i, blackColor ); }
+			if ( cIndex + i < nXRes )	{ destImgBuff.setPixel ( cIndex + i, rIndex, blackColor ); }
+			if ( cIndex - i >= 0 )		{ destImgBuff.setPixel ( cIndex - i, rIndex, blackColor ); }
 		}
 	}
 
-	// Optional Step: Draw Local Minimum Point Per Line
+	// Optional Step6: Draw Local Minimum Point Per Line
 	std::vector<int> minArray;
 	SimpleHeadTracking::GetLocalMinimumOfDepthMap(destDepthData, minArray, depthGen);
-	
+
 	for (int i = 0; i < minArray.size(); ++i) {
 		if (minArray[i] == -1) { continue; }
 		destImgBuff.setPixel(minArray[i], i, whiteColor);
 	}
-	
+
 	delete [] destDepthData;
-
-	//// 
-	//// Start to process Depth Data
-	//// 
-	//
-	//// Step 1:	Fill Shadow Of Raw Depth Data
-	//bool eResult = SimpleHeadTracking::FillShadow(destDepthData, destDepthData, nXRes, nYRes, depthGen.GetDeviceMaxDepth());
-	//if ( eResult == false ) 
-	//{
-	//	delete [] destDepthData;
-	//	return false;
-	//}
-
-	//// Step 2:	Smooth Raw Depth Data
-	//eResult = SimpleHeadTracking::SmoothDepthData(destDepthData, destDepthData, nXRes, nYRes, 1, 1);
-	//if ( eResult == false ) 
-	//{
-	//	delete [] destDepthData;
-	//	return false;
-	//}
-
-	//// Optional Step 3:		Draw Local Minimum of Depth Map
-	//std::vector<int> minArray;
-	//SimpleHeadTracking::GetLocalMinimumOfDepthMap(destDepthData, minArray, depthGen);
-
-	//// Step 3:	Find Local Minimum of Row
-	//int rowIndex, colIndex;
-
-	//eResult = SimpleHeadTracking::FindHeadCoordinate(destDepthData, nXRes, nYRes, rowIndex, colIndex, depthGen);
-	//if ( eResult == false ){
-	//	// delete [] destDepthData;
-	//	qDebug() << "Can not find Head";
-	//}
-
-	////// Last Operation is to convert XnDepthPixel Array to QImage
-
-	//// Option:
-	//// Draw Some Modified Markers on Generated QImage from Kinect Depth Map
-	//// ...
-
-	//QRgb whiteColor = qRgb(255, 255, 255);
-
-	//for (int i = 0; i < minArray.size(); ++i) {
-	//	if (minArray[i] == -1) { continue; }
-	//	destImgBuff.setPixel(minArray[i], i, whiteColor);
-	//}
-
-	//delete [] destDepthData;
 
 	return true;
 }
@@ -155,11 +114,11 @@ bool SimpleHeadTracking::
 //  Private Static Member Function
 // --------------------------------
 
-bool SimpleHeadTracking::FillShadow(const XnDepthPixel * srcDepthData, 
-									XnDepthPixel * destDepthData, 
-									int nXRes, 
-									int nYRes, 
-									XnDepthPixel maxDeviceDepth)
+bool SimpleHeadTracking::FillShadow (	const XnDepthPixel * srcDepthData, 
+										XnDepthPixel * destDepthData, 
+										int nXRes, 
+										int nYRes, 
+										XnDepthPixel maxDeviceDepth )
 {
 	// qDebug() << "Entering:\tbool SimpleHeadTracking::FillShadow()";
 

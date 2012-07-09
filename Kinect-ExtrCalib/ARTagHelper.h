@@ -8,7 +8,6 @@
 // FORWARD DECLARATION
 // 
 
-class GrayCode;
 class ExtrCalibrator;
 
 // 
@@ -18,10 +17,11 @@ class ExtrCalibrator;
 class ARTagHelper
 
 {
+	friend class ExtrCalibrator;
+	friend int main ( int, char ** );
 
 private:
-	
-	// Camera Size
+
 	int m_CameraWidth;
 	int m_CameraHeight;
 
@@ -33,17 +33,9 @@ private:
 
 	double ( * m_MarkerCornerPos3d )[3];									// 3d marker corner position in world-coordinate
 	double ( * m_MarkerCornerPosCam2d )[2];									// 2d marker corner position in camera-coordinate
-	// double ( * m_MarkerCornerPosPro2d )[2];									// 2d marker corner position in projector-coordinate
 
 	// Flag for each marker
-	// 
-	//	- True: marker corner is visible from Camera / Projector
-	//	- False: marker corner is not visible
-	//	( for projector, visible means gray code can be obtained at the marker corner )
-	//
-
 	bool	* m_ValidFlagCam;
-	// bool	* m_ValidFlagPro;
 
 public:
 
@@ -61,11 +53,10 @@ public:
 	virtual ~ARTagHelper();
 
 	void FindMarkerCorners ( unsigned char * image );
-	// void GetMarkerCornerPos2dInProjector ( GrayCode * gc );
 	void DrawMarkersInCameraImage ( float pixZoomX, float pixZoomY );
+	void DrawMarkersInCameraImage ( cv::Mat & img );
 
 	void PrintMarkerCornersPos2dInCam () const;
-	// void PrintMarkerCornersPos2dInProjector() const;
 	void PrintMarkerCornersPos3d() const;
 	
 	// 
@@ -73,7 +64,21 @@ public:
 	// 
 
 	int GetMarkerNumber() const { return m_MarkerNum; }
-	void GetValidFlagArray ( int deviceType, const bool *& validArray, int & markerNum ) const;
+	int GetValidMarkerNumber() const 
+	{
+		int validNum = 0;
+		for ( int i = 0; i < m_MarkerNum; ++i ) {
+			if ( m_ValidFlagCam[i] ) { validNum++; }
+		}
+		return validNum;
+	}
+	void GetValidFlagArray ( const bool *& validArray, int & markerNum ) const;
+
+	void Clear ()
+	{
+		memset ( m_MarkerCornerPosCam2d, 0, m_MarkerNum * 4 * 2 * sizeof ( double ) );
+		memset ( m_ValidFlagCam, false, m_MarkerNum );
+	}
 
 };
 

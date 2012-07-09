@@ -1,6 +1,8 @@
 #ifndef _OPENCV_UTILITY_H_
 #define _OPENCV_UTILITY_H_
 
+#define		OPENNI_MAX_DEPTH		10000
+
 #include <opencv2\opencv.hpp>
 
 namespace OpenCvUtility
@@ -17,7 +19,7 @@ double CalcBiggestDepth8u(const cv::Mat & srcDepthMat);
 // TODO:
 // double CalcSmallestDepth(const cv::Mat & srcDepthMat);
 
-void CalcMinimumOfDepthHistogram ( const cv::Mat & srcDepthMat, int & minIndex, int & minHistValue );
+void CalcMinimumOfDepthHistogram ( const cv::Mat & srcDepthMat, int & minIndex, int & minHistValue, int threshold = OPENNI_MAX_DEPTH );
 
 inline void HSV2RGB ( unsigned short H, uchar S, uchar V, uchar & R, uchar & G, uchar & B )
 {

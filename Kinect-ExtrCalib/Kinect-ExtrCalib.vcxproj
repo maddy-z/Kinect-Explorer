@@ -68,13 +68,24 @@
     <ClInclude Include="..\Kinect Explorer\Sources\OpenCvUtility.h" />
     <ClInclude Include="..\Kinect Explorer\Sources\OpenNiUtility.h" />
     <ClInclude Include="ARTagHelper.h" />
+    <ClInclude Include="ExtrCalibrator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Kinect Explorer\Sources\GlobalUtility.cpp" />
     <ClCompile Include="..\Kinect Explorer\Sources\OpenCvUtility.cpp" />
     <ClCompile Include="..\Kinect Explorer\Sources\OpenNiUtility.cpp" />
     <ClCompile Include="ARTagHelper.cpp" />
+    <ClCompile Include="ExtrCalibrator.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\dist.txt" />
+    <None Include="Config\intr.txt" />
+    <None Include="Config\marker_cfg_a3.txt" />
+    <None Include="Config\marker_cfg_a4.txt" />
+    <None Include="Config\marker_pos_a3.txt" />
+    <None Include="Config\marker_pos_a4.txt" />
+    <None Include="Config\OpenNiProductConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
