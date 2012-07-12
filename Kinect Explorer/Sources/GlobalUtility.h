@@ -39,6 +39,7 @@ namespace GlobalUtility
 	bool CopyColorRawBufToCvMat8uc3 ( const XnRGB24Pixel * srcColorData, cv::Mat & destColorMat );
 
 	bool CopyCvMat8uToQImage ( const cv::Mat & srcMat, QImage & destImg );
+	bool CopyQImageToCvMat8uc3 ( const QImage & qImg, cv::Mat & destMat );
 
 	// 
 	// cv::Mat Format Conversion
@@ -66,7 +67,7 @@ namespace GlobalUtility
 	// Easy Handling Methods for processing Depth Data ( In the form of cv::Mat )
 	// 
 	
-	bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue, int newValue = 0 );
+	bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue, int newValue = 0, bool isThresholdUnknownDepth = false );
 
 }
 

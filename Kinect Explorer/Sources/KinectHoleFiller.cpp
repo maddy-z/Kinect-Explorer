@@ -256,17 +256,10 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling  ( const cv::Mat & srcDepthMat,
 		--distDataPtr;
 
 		for (int x = depthWidth - 2; x >= 1; --x, --distDataPtr, --destDataPtr) 
-		{
-			/*
-			if (*distDataPtr == 0) 
-			{
-				continue;
-			}
-			else */
-			
+		{	
 			if (*distDataPtr > 0)
 			{
-				// 8-adjant Points
+				// 8-Adjant Points
 				adj[0] = *(distDataPtr + 1);
 				adj[1] = *(distDataPtr + depthWidth + 1);
 				adj[2] = *(distDataPtr + depthWidth);
@@ -274,9 +267,9 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling  ( const cv::Mat & srcDepthMat,
 
 				int min = adj[0];
 				int min_i = 0;
-				for (int k = 1; k < 4; ++k) 
+				for ( int k = 1; k < 4; ++k ) 
 				{
-					if (adj[k] < min) {
+					if ( adj[k] < min ) {
 						min = adj[k];
 						min_i = k;
 					}
@@ -286,12 +279,12 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling  ( const cv::Mat & srcDepthMat,
 				{
 					*distDataPtr = min + 1;
 				
-					switch (min_i) 
+					switch ( min_i ) 
 					{
-					case 0: *destDataPtr = *(destDataPtr+1); break;
-					case 1: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr+1) + destRowStep); break;
-					case 2: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep); break;
-					case 3: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1) + destRowStep); break;
+					case 0:		*destDataPtr = *(destDataPtr+1);											break;
+					case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr+1) + destRowStep);	break;
+					case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);		break;
+					case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr-1) + destRowStep);	break;
 					}
 				}
 			}
@@ -300,15 +293,8 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling  ( const cv::Mat & srcDepthMat,
 		// 
 		// x = 0
 		// 
-
-		/*
-		if (*distDataPtr == 0) {
-			;
-		}
-		else {
-		*/
 		
-		if (*distDataPtr > 0) 
+		if ( *distDataPtr > 0 ) 
 		{ 
 			adj[0] = *(distDataPtr + 1);
 			adj[1] = *(distDataPtr + depthWidth + 1);
@@ -331,9 +317,9 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling  ( const cv::Mat & srcDepthMat,
 			
 				switch (min_i) 
 				{
-				case 0: *destDataPtr = *(destDataPtr+1); break;
-				case 1: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr+1) + destRowStep); break;
-				case 2: *destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep); break;
+				case 0:		*destDataPtr = *(destDataPtr+1);											break;
+				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr+1) + destRowStep);	break;
+				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);		break;
 				}
 			}
 		}
@@ -360,10 +346,10 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 	int depthWidth = srcDepthMat.size().width, depthHeight = srcDepthMat.size().height;
 	int srcRowStep = srcDepthMat.step, destRowStep = destDepthMat.step;
 
-	const uchar * srcRowPtr = NULL;
+	const uchar * srcRowPtr			= NULL;
 	const XnDepthPixel * srcDataPtr = NULL;
-	uchar * destRowPtr = NULL;
-	XnDepthPixel * destDataPtr = NULL;
+	uchar * destRowPtr				= NULL;
+	XnDepthPixel * destDataPtr		= NULL;
 
 	// 
 	// Create Distance Map
@@ -379,9 +365,9 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 	// First Scan
 	// 
 	
-	srcRowPtr = srcDepthMat.data + srcRowStep;
-	destRowPtr = destDepthMat.data + destRowStep;
-	distRowPtr = distMap + depthWidth;
+	srcRowPtr  = srcDepthMat.data	+ srcRowStep;
+	destRowPtr = destDepthMat.data	+ destRowStep;
+	distRowPtr = distMap			+ depthWidth;
 
 	for ( int y = 1; y < depthHeight - 1; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep, distRowPtr += depthWidth ) 
 	{
@@ -404,6 +390,7 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 			
 				int min = adj[0];
 				int min_i = 0;
+		
 				for ( int k = 1; k < 4; ++k ) {
 					if ( adj[k] < min ) {
 						min = adj[k]; min_i = k;
@@ -417,7 +404,7 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 				case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr - 1);								break;
 				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) - destRowStep);		break;
 				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) - destRowStep);			break;
-				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) - destRowStep);		break;
+				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) - destRowStep);		break;		
 				}
 			}
 		}
@@ -439,9 +426,9 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 		{
 			if ( *distDataPtr > 0 )
 			{
-				adj[0] = *(distDataPtr + 1) + 1;
+				adj[0] = *(distDataPtr + 1)				 + 1;
 				adj[1] = *(distDataPtr + depthWidth + 1) + 2;
-				adj[2] = *(distDataPtr + depthWidth) + 1;
+				adj[2] = *(distDataPtr + depthWidth)	 + 1;
 				adj[3] = *(distDataPtr + depthWidth - 1) + 2;
 
 				int min = adj[0];
@@ -459,11 +446,41 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 					*distDataPtr = min;
 				
 					switch ( min_i ) 
+					
 					{
-					case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr + 1);								break;
-					case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) + destRowStep);		break;
-					case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);			break;
-					case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) + destRowStep);		break;
+					
+					case 0:		
+						
+						if (*destDataPtr < *(XnDepthPixel *)(destDataPtr + 1)) {
+							*destDataPtr = *(XnDepthPixel *)(destDataPtr + 1);									
+						}
+
+						break;
+
+					case 1:		
+						
+						if (*destDataPtr < *(XnDepthPixel *)((uchar *)(destDataPtr + 1) + destRowStep)) {
+							*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) + destRowStep);		
+						}
+
+						break;
+
+					case 2:		
+						
+						if (*destDataPtr < *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep)) {
+							*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);			
+						}
+
+						break;
+
+					case 3:		
+						
+						if (*destDataPtr < *(XnDepthPixel *)((uchar *)(destDataPtr - 1) + destRowStep)) {
+							*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) + destRowStep);		
+						}
+
+						break;
+
 					}
 				}
 			}
@@ -474,6 +491,155 @@ KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( const cv::Mat & srcDepthMat,
 
 	return true;
 }
+
+bool 
+KinectHoleFiller::NearestNeighborhoodHoleFilling3 ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth )
+{
+	assert ( srcDepthMat.size() == destDepthMat.size() );
+	assert ( srcDepthMat.type() == destDepthMat.type() );
+	assert ( srcDepthMat.type() == CV_16UC1 );
+
+	if ( srcDepthMat.empty() || destDepthMat.empty() ) {
+		return false;
+	}
+
+	int depthWidth = srcDepthMat.size().width, depthHeight = srcDepthMat.size().height;
+	int srcRowStep = srcDepthMat.step, destRowStep = destDepthMat.step;
+
+	const uchar * srcRowPtr			= NULL;
+	const XnDepthPixel * srcDataPtr = NULL;
+	uchar * destRowPtr				= NULL;
+	XnDepthPixel * destDataPtr		= NULL;
+
+	// 
+	// Create Distance Map
+	// 
+	
+	int adj[4], adjValue[4];
+	int * distRowPtr = NULL, * distDataPtr = NULL;
+	int * const distMap = new int[depthHeight * depthWidth];
+	
+	memset ( distMap, 0, depthHeight * depthWidth * sizeof (int) );
+
+	// 
+	// First Scan
+	// 
+	
+	srcRowPtr  = srcDepthMat.data	+ srcRowStep;
+	destRowPtr = destDepthMat.data	+ destRowStep;
+	distRowPtr = distMap			+ depthWidth;
+
+	for ( int y = 1; y < depthHeight - 1; ++y, srcRowPtr += srcRowStep, destRowPtr += destRowStep, distRowPtr += depthWidth ) 
+	{
+		srcDataPtr = (const XnDepthPixel *)(srcRowPtr) + 1;
+		destDataPtr = (XnDepthPixel *)(destRowPtr) + 1;
+		distDataPtr = (distRowPtr) + 1;
+
+		for ( int x = 1; x < depthWidth - 1; ++x, ++srcDataPtr, ++destDataPtr, ++distDataPtr ) 
+		{
+			if ( (*srcDataPtr) && (*srcDataPtr) <= maxDepth ) {
+				*distDataPtr = 0;
+				*destDataPtr = *srcDataPtr;
+			}
+			else if ( (*srcDataPtr) == 0 ) 
+			{
+				/*
+				adj[0] = *(distDataPtr - 1) + 1;
+				adj[1] = *(distDataPtr - depthWidth - 1) + 2;
+				adj[2] = *(distDataPtr - depthWidth) + 1;
+				adj[3] = *(distDataPtr - depthWidth + 1) + 2;
+				*/
+
+				adjValue[0] = *(XnDepthPixel *)(srcDataPtr - 1);
+				adjValue[1] = *(XnDepthPixel *)((uchar *)(srcDataPtr - 1) - destRowStep);
+				adjValue[2] = *(XnDepthPixel *)((uchar *)(srcDataPtr) - destRowStep);
+				adjValue[3] = *(XnDepthPixel *)((uchar *)(srcDataPtr + 1) - destRowStep);
+
+				int max = adjValue[0];
+				int max_i = 0;
+		
+				for ( int k = 1; k < 4; ++k ) {
+					if ( adjValue[k] > max ) {
+						max = adjValue[k]; max_i = k;
+					}
+				}
+				
+				*distDataPtr = 1;
+				*destDataPtr = max;
+
+				/*
+				switch ( max_i ) 
+				{
+				case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr - 1);								break;
+				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) - destRowStep);		break;
+				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) - destRowStep);			break;
+				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) - destRowStep);		break;		
+				}
+				*/
+			}
+		}
+	}
+
+	// 
+	// Second Scan
+	// 
+
+	destRowPtr = destDepthMat.data + ( depthHeight - 1 ) * ( destRowStep ) - 1;
+	distRowPtr = distMap + ( depthHeight - 1 ) * ( depthWidth ) - 1;
+
+	for ( int y = depthHeight - 2; y >= 1; --y, destRowPtr -= destRowStep, distRowPtr -= depthWidth ) 
+	{
+		destDataPtr = (XnDepthPixel *)(destRowPtr) - 1;
+		distDataPtr = distRowPtr - 1;
+
+		for ( int x = depthWidth - 2; x >= 1; --x, --distDataPtr, --destDataPtr ) 
+		{
+			if ( *distDataPtr > 0  && *destDataPtr > 0 )
+			{
+				/*
+				adj[0] = *(distDataPtr + 1)				 + 1;
+				adj[1] = *(distDataPtr + depthWidth + 1) + 2;
+				adj[2] = *(distDataPtr + depthWidth)	 + 1;
+				adj[3] = *(distDataPtr + depthWidth - 1) + 2;
+				*/
+
+				adjValue[0] = *(XnDepthPixel *)(destDataPtr + 1);
+				adjValue[1] = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) + destRowStep);
+				adjValue[2] = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);
+				adjValue[3] = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) + destRowStep);
+
+				int max = adjValue[0];
+				int max_i = 0;
+				
+				for ( int k = 1; k < 4; ++k ) 
+				{
+					if ( adjValue[k] > max ) {
+						max = adjValue[k];
+						max_i = k;
+					}
+				}
+
+				if ( max > *destDataPtr ) {
+					*destDataPtr = max;
+				}
+
+				/*
+				switch ( max_i ) 			
+				{	
+				case 0:		*destDataPtr = *(XnDepthPixel *)(destDataPtr + 1);								break;
+				case 1:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr + 1) + destRowStep);		break;
+				case 2:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr) + destRowStep);			break;
+				case 3:		*destDataPtr = *(XnDepthPixel *)((uchar *)(destDataPtr - 1) + destRowStep);		break;
+				}*/
+			}
+		}
+	}
+
+	delete [] distMap;
+
+	return true;
+}
+
 
 bool 
 KinectHoleFiller::DistanceTransform ( const cv::Mat & srcDepthMat, cv::Mat & destDepthMat, int maxDepth )

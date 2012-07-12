@@ -667,7 +667,42 @@ bool CopyCvMat8uToQImage(const cv::Mat & srcMat, QImage & destImg)
 	return true;
 }
 
-bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue, int newValue )
+bool CopyQImageToCvMat8uc3 ( const QImage & srcImg, cv::Mat & destMat )
+{
+	if ( destMat.empty() || srcImg.isNull() ) {
+		return false;
+	}
+
+	assert ( destMat.size().height == srcImg.height() && destMat.size().width == srcImg.width() );
+	assert ( destMat.type() == CV_8UC3 );
+
+	// double maxDepth = OpenCvUtility::CalcBiggestDepth8u(srcDepthMat);
+
+	const int nXRes = destMat.size().width;
+	const int nYRes = destMat.size().height;
+	const int destRowStep = destMat.step;
+
+	uchar * destRowPtr = NULL;
+	uchar * destDataPtr = NULL;
+
+	destRowPtr = destMat.data;
+	for ( int y = 0; y < nYRes; ++y, destRowPtr += destRowStep ) 
+	{
+		destDataPtr = destRowPtr;
+		const uchar * imagePtr = srcImg.scanLine(y);
+
+		for (int x = 0; x < nXRes; ++x, destDataPtr += 3, imagePtr += 4) 
+		{
+			destDataPtr[0] = imagePtr[0];
+			destDataPtr[1] = imagePtr[1];
+			destDataPtr[2] = imagePtr[2];
+		}
+	}
+	
+	return true;
+}
+
+bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat, double thresholdValue, int newValue, bool isThresholdUnknownDepth )
 {
 	if ( srcMat.empty() || destMat.empty() ) {
 		return false;
@@ -697,6 +732,10 @@ bool ConvertCvMat16uByThresholdValue ( const cv::Mat & srcMat, cv::Mat & destMat
 
 		for (int x = 0; x < nXRes; ++x, ++srcDataPtr, ++destDataPtr) {
 			if (*srcDataPtr > thresholdValue) {
+				*destDataPtr = newValue;
+			}
+
+			if (*srcDataPtr == 0 && isThresholdUnknownDepth) {
 				*destDataPtr = newValue;
 			}
 		}

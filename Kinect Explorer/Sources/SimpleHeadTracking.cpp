@@ -55,11 +55,16 @@ bool SimpleHeadTracking::
 	// cv::waitKey(15);
 
 	// Step 1:	Filter Depth Data By Threshold Value
-	const int thresholdDepthValue = 1500.0f, newDepthValue = 2000;
-	result = GlobalUtility::ConvertCvMat16uByThresholdValue ( depthMat, depthMat, thresholdDepthValue, newDepthValue );
+	const int thresholdDepthValue = 4000.0f, newDepthValue = 4500;
+	result = GlobalUtility::ConvertCvMat16uByThresholdValue ( depthMat, depthMat, thresholdDepthValue, newDepthValue, true );
+
+	// Step 2:	Dilating Depth Data
+	int seSize = 3;
+	cv::Mat se = cv::getStructuringElement ( cv::MORPH_ELLIPSE , cv::Size(5, 5) );
+	cv::erode ( depthMat, depthMat, se, cv::Point(-1, -1), 3 );
 
 	// Step 2:	Fill Depth Shadow
-	result = KinectHoleFiller::NearestNeighborhoodHoleFilling2 ( depthMat, depthMat, OPENNI_MAX_DEPTH );
+	// result = KinectHoleFiller::NearestNeighborhoodHoleFilling3 ( depthMat, depthMat, OPENNI_MAX_DEPTH );
 
 	// Step 3:	Filter Depth Data
 	cv::medianBlur ( depthMat, depthMat, 3 );

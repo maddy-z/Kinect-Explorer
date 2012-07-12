@@ -19,7 +19,11 @@ class SimpleHeadTracking
 
 public:
 	
-	static bool SimpleDepthHandlingFunc ( QImage & destImgBuff, const xn::DepthGenerator & depthGen );
+	static bool SimpleDepthHandlingFunc (	QImage & destImgBuff, const xn::DepthGenerator & depthGen );
+	static bool FindHeadCoordinate		(	const XnDepthPixel * srcDepthData, 
+											int nXRes, int nYRes, 
+											int & rowIndex, int & columnIndex, 
+											const xn::DepthGenerator & depthGen );
 
 private:
 
@@ -44,10 +48,6 @@ private:
 	// static int FindLocalMinimumOfRow(const cv::Mat & srcDepthMat);
 
 	static int FindLocalMinimumOfRow (	const XnDepthPixel * srcDepthData, int nXRes, int rowIndex, const xn::DepthGenerator & depthGen);
-	static bool FindHeadCoordinate   (	const XnDepthPixel * srcDepthData, 
-										int nXRes, int nYRes, 
-										int & rowIndex, int & columnIndex, 
-										const xn::DepthGenerator & depthGen );
 
 	static bool IsPossiblyOnHeadFast (	const XnDepthPixel * srcDepthData, int nXRes, 
 										int rowIndex, int colIndex,
